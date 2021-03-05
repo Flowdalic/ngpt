@@ -1,0 +1,185 @@
+NGPT - Next Generation POSIX Threading
+
+Version 2.2.1 Notes:
+===================
+In this release, the primary focus is bugfixes in the area of shared mutexes and the ngptc
+utility. Please read bullet# 6 and 7 under the known problems section for the ngptc related
+changes.
+
+Version 2.2.0 Notes:
+===================
+
+NGPT Release 2.2.0 is a point release of the "Next Generation" of Linux pthreads support.
+This release is fully suitable as a replacement for LinuxThreads by either a single user or group or
+and entire distribution.
+
+In this release, the primary focus was performance.  Significant performance and scalability enhancements
+have been made to this release making it the fastest and most scalable threads package available on the
+Linux platform.
+
+The binary RPMs supplied with this release are based on and built for use with a 2.4.19 or better
+kernel that has the new "officially" sanctioned support for NGPT.  In addition it is necessary for
+you to apply the new patch-futex-2.4.19 patch, included in this release.  This patch is based on
+new functionality already provided in the 2.5 kernel that will eventually be backported to the 2.4
+kernel and support.  There is also a patch, patch-kngpt-2.4.18, that is designed to be installed over a
+standard 2.4.18 kernel from kernel.org.  NGPT takes advantage of the functionality provided by these patches
+to efficiently handle mutexes, both shared and non-shared.  This patch is **ABSOLUTELY REQUIRED**.  NGPT
+will not function without it and will abort processing during startup.  The installation instructions 
+have changed a bit as well since 1.2.2 and you should check the INSTALL file for the updated instructions.
+
+You can build the library from source by downloading the source tarball or source rpm and 
+consulting the INSTALL file.
+
+If you are running with a 2.5.x experimental kernel, it's best that run with 2.5.40 or higher since
+it will already have the required changes for NGPT.  You will also have to rebuild NGPT from either
+the source tarball or rpm.
+
+As an STABLE RELEASE, this release is suitable for use in a production environment, however, it
+should be noted that although we have done fairly extensive testing and you should find this release
+relatively free of problems, there may be some problems.  If you encounter any problems with this 
+release please post them to the NGPT website and the development team will address them quickly.
+
+Known Problems
+==============
+1.  In LinuxThreads, credentials are thread based.  In NGPT running on a uniprocessor machine,
+    credentials are process based as demanded by POSIX.  However, on an SMP machine, this is 
+    not yet true. 
+    NOTE: The NGPT team has come up with a kernel patch for that will correct this problem and
+    this patch is currently being ported to co-exist with the existing futex patch that was
+    introduced in this release.  It should be out very soon.
+
+2.  This release will work only on IA32 (x86), IA64, PowerPC and S/390 architectures.  We're 
+    always looking for folks with specific platform experience to port NGPT to additional 
+    hardware platforms.
+
+3.  To run programs that use system libraries that have runtime references to 
+    the pthread library, changes are needed to the way that the runtime linker
+    searches for libraries. For example, if librt.so.1 is used it requires the
+    pthread library libpthread.so.1, and if the application was linked with 
+    the NGPT version of this library then the same version must be found and 
+    used by the runtime linker when resolving references by other libraries. 
+
+    By default NGPT is installed as the alternate threads package, in the 
+    /usr/lib directory. To insure that all references to the pthread library
+    uses the NGPT version the following shell variables should be set up 
+    prior to running NGPT applications:
+
+	export LD_LIBARARY_PATH="/usr/lib:/lib:$LD_LIBARARY_PATH"
+	export LD_PRELOAD=libpthread.so.0
+
+    This will insure that the NGPT pthread library will be found first by 
+    the runtime linker, and that it will be linked in as the first runtime
+    library. 
+
+    Program behavior without these shell variables being set will be undefined,
+    if a wrong version of the pthreads runtime library is loaded. Typically a 
+    Segmentation Fault will occur. If you see this the ldd utility can be used 
+    to see how the runtime linker resolves library requirements.
+
+    The shell command 'ldd myapplication' can be used to identify if this has 
+    occured. The following shows what it should look like:
+
+       # export LD_LIBRARY_PATH="/usr/lib:/lib"
+       # export LD_PRELOAD=libpthread.so.0
+       # ldd /bin/ls
+	    libpthread.so.0 => /usr/lib/libpthread.so.0 (0x40017000)
+	    librt.so.1 => /lib/librt.so.1 (0x4005e000)
+	    libpthread.so.20 => /usr/lib/libpthread.so.20 (0x4002a000)
+	    libc.so.6 => /lib/libc.so.6 (0x40070000)
+	    /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x40000000)
+
+    In this example the libpthread.so.0 is resolved to /usr/lib/libpthread.so.0;
+    it should work properly.
+
+    For a case where the pthread runtime library is incorrectly resolved, it 
+    would have something like the following output:
+
+       # ldd pingpong
+	    librt.so.1 => /lib/librt.so.1 (0x40018000)
+	    libpthread.so.20 => /usr/lib/libpthread.so.20 (0x4002a000)
+	    libc.so.6 => /lib/libc.so.6 (0x40070000)
+	    libpthread.so.0 => /lib/libpthread.so.0 (0x401a4000)
+	    /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x40000000)
+
+    In this example libpthread.so.0 is resolved to /lib/libpthread.so.0i, where
+    it should have been resolved to /usr/lib/libpthread.so.0 (NGPT runtime); it 
+    will likely fail.
+
+4.  When linking with other system libraries that reference the pthread library
+    a warning may be issued by the linker:
+
+	/usr/bin/ld: warning: libpthread.so.0, needed by /lib/librt.so,
+		 may conflict with libpthread.so.20
+
+    NGPT's runtime library is named libpthread.so.20, with the NGPT release 
+    version number appended. It is also linked to the runtime libpthread.so.0
+    name for binary compatibility.
+   
+    This warning can be ignored, as long the procedure described in (3) above
+    is done before running the application.
+
+5.  The configure option --enable-hp_timing is currently available for i386
+    architectures that support the TSC interval time counter register. This
+    capability is used as a very fast time of day/interval time counter for
+    NGPT, and replaces calls to the kernel (i.e. gettimeofday) with reads 
+    of the TSC register in user-mode.
+
+    Architectures that support the TSC register capability are i386 Pentium
+    II or later Pentium III and IV based systems. This will be expanded in 
+    the future for the Itanium architecture.  This feature should not be used
+    with other architectures at this time.
+
+    To enable this feature you will need to rebuild and configure NGPT from 
+    the source tar-ball. 
+
+    Use:
+	./configure --enable-hp_timing ...
+
+    to configure NGPT and then build NGPT as normal.
+
+6.  The ngpt utility has been enhanced to allow the pth_shared_area 
+    address and size to be specified when it runs. This is the utility 
+    that ngptinit inkokes to do the shared area initialization.
+   
+    It now can take the options (had none before):
+	-s nnn	- The number of shared objects to allocate, it currently
+		  allows from 0 to 64000 shared objects to be created
+
+        -a aaa  - The virtual address where the NGPT shared segment gets
+		  attached.  This should provide flexibility if other 
+		  programs have fixed mmaps that overlap with NGPT's 
+		  fixed address for this area.
+
+        -v      - Verbose, tell on exit what parameters were used to do 
+		  the build of the shared area file, otherwise it looks
+		  like it did before, ie. same output.
+
+	-r	- Report what the current NGPT shared area address/size 
+		  and version are.
+
+        -h      - Outputs a usage message
+
+    The NGPT runtime was enhanced to read the shared area init file, get
+    the size and addr values and use them to set up NGPT's mmap for the 
+    shared area. Also, validation of the shared area layout is done.
+
+    These options can be specified in the ngptinit script that gets 
+    invoked at system bootup time.
+
+
+    Example: 
+	ngptc -s 8000			# Allocates 8000 shared locks
+	ngptc -a 0x10000000		# Map the NGPT shared area here
+
+    Ngptinit will pass it's arguments through to ngptc. Ngptc will abort
+    if the effective user id is not 0 (super-user).
+
+7. Applications linked with older versions of the NGPT library can run 
+   with the new NGPT shared area changes, but a new /dev/shm/ngpt.vv 
+   file will be built for the new instances to keep the layout changes 
+   from breaking older linked applications.
+
+   These applications can run side by side with no problem, but new APPs
+   cannot use shared mutexes or condition variables with older versions.
+   To do this the versions will have to agree.
+

@@ -1,0 +1,49 @@
+                    
+                                   ``A good magician never reveals
+                                     his secret; the unbelievable trick
+                                     becomes simple and obvious once it is
+                                     explained. So too with UNIX.''
+
+  NGPT - Next Generation POSIX Threading
+
+  PORTING
+  =======
+
+  SUCCESSFULLY TESTED PLATFORMS
+
+  The NGPT package was successfully tested on the following platforms
+  (and should automatically adjust to other platforms, of course):
+
+  __PLATFORM_ID_______________________ __MACHINE_CONTEXT__ __STACK__ __VERSION__
+  i686-suse-linux-gnu2.4glibc2.2      | sjlj/ssjlj/sas    | down    | 0.9.3 
+  i586-suse-linux-gnu2.4glibc2.2      | sjlj/ssjlj/sas    | down    | 0.9.3 
+  i686-suse-linux-gnu2.2glibc2.1      | sjlj/ssjlj/sas    | down    | 0.9.3
+  i586-suse-linux-gnu2.2glibc2.1      | sjlj/ssjlj/sas    | down    | 0.9.3
+  i686-redhat-linux-gnu2.4glibc2.2    | sjlj/ssjlj/sas    | down    | 0.9.3
+  i586-redhat-linux-gnu2.4glibc2.2    | sjlj/ssjlj/sas    | down    | 0.9.3
+
+
+  HINTS FOR PORTING TO NEW PLATFORMS
+
+  In case you're not able to use NGPT on a new and esoteric platform,
+  here are a few hints.
+
+  NGPT has three parts which perhaps has to be ported to new platforms: the
+  machine context initialization, i.e. the function pth_mctx_set() in
+  pth_mctx.c and the code used to create kernel threads in pth_native.c.  The 
+  first exercise is to write a pth_mctx_set() function which initializes a `jmp_buf' 
+  (see setjmp(3)) with a given function and stack, so when the next longjmp(3) 
+  is done on this `jmp_buf', the function starts executing on the given stack. The
+  second involves writing an implementation of pth_new_native() in pth_native.c
+  that will create the appropriate kernel thread, i.e. clone() on Linux or clone2()
+  on Linux/IA64.
+
+  The last and probably most difficult part that needs to be done when porting NGPT
+  to another platform is the in the inline assembler functions that have been added
+  to increase performance.  For the most part, these are simple atomic operations.
+  If you have any questions about these functions, you can post to the devel mailing
+  list and we'll try to respond promptly.
+
+  Additionally see the INSTALL document for the --enable-mctx-XXX options.
+  These can be used to easily try out mctx combinations on a platform, too.
+

@@ -1,0 +1,6077 @@
+Content-type: text/html
+
+<HTML><HEAD><TITLE>Manpage of pthread</TITLE>
+</HEAD><BODY>
+<H1>pthread</H1>
+Section: POSIX Threading API of NGPT (3)<BR>Updated: 26-Jul-2000<BR><A HREF="#index">Index</A>
+<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread</B> - POSIX.1c Threading API of GNU Pth
+<A NAME="lbAC">&nbsp;</A>
+<H2>VERSION</H2>
+
+GNU Pth 1.4a3 (26-Jul-2000)
+<A NAME="lbAD">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<B>Application Makefiles:</B>
+<P>
+
+
+
+<PRE>
+ #   manually
+ CFLAGS=-I/path/to/pth/include
+ LDFLAGS=-L/path/to/pth/lib
+ LIBS=-lpthread
+
+
+</PRE>
+
+
+
+
+<PRE>
+ #   automatically
+ CFLAGS=`pthread-config --cflags`
+ LDFLAGS=`pthread-config --ldflags`
+ LIBS=`pthread-config --libs`
+
+
+</PRE>
+
+
+<B>Application source files:</B>
+<P>
+
+
+
+<PRE>
+ #include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+
+
+</PRE>
+
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>Overview</H2>
+
+This is the <FONT SIZE="-1">IEEE</FONT> Std. 1003.1c (&quot;<FONT SIZE="-1">POSIX</FONT>.1c&quot;) conforming threading <FONT SIZE="-1">API</FONT> of
+<FONT SIZE="-1">GNU</FONT> Portable Threads (<B>Pth</B>). This <FONT SIZE="-1">API</FONT> is commonly known as ``<I></I><FONT SIZE="-1"><I>POSIX</I></FONT><I>
+threads</I>'' or in short ``<I>Pthreads</I>''. It is provided by <B>Pth</B> with
+the intention of backward compatibility to existing multithreaded
+applications. It is implemented by mapping the various Pthread <FONT SIZE="-1">API</FONT>
+functions to the corresponding native <B>Pth</B> <FONT SIZE="-1">API</FONT> functions.
+<A NAME="lbAG">&nbsp;</A>
+<H2>Supported Features</H2>
+
+The following defined feature macros in <TT>pthread.h</TT> indicate supported
+features:
+<P>
+
+
+
+<PRE>
+ #define _POSIX_THREADS
+ #define _POSIX_THREAD_ATTR_STACKADDR
+ #define _POSIX_THREAD_ATTR_STACKSIZE
+
+
+</PRE>
+
+
+The following undefined feature macros in <TT>pthread.h</TT> indicate (still)
+unsupported features:
+<P>
+
+
+
+<PRE>
+ #undef  _POSIX_THREAD_PRIORITY_SCHEDULING
+ #undef  _POSIX_THREAD_PRIO_INHERIT
+ #undef  _POSIX_THREAD_PRIO_PROTECT
+ #undef  _POSIX_THREAD_PROCESS_SHARED
+ #undef  _POSIX_THREAD_SAFE_FUNCTIONS
+
+
+</PRE>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>Notes</H2>
+
+A few notes which you should keep in mind when working with the <B>Pth</B> Pthread
+<FONT SIZE="-1">API</FONT>.
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT><B>Non-Preemptive Scheduling</B><DD>
+
+First you have to always remember when working with this Pthread library that
+it uses non-preemptive scheduling, because it is directly based on <B>Pth</B>
+(<B>Pth</B> for portability reasons is a pure non-preemptive thread scheduling
+system). So there is no implicit yielding of execution control unless you can
+<TT>pthread_*</TT> functions which could block and you cannot expect granular
+concurrency in your application, of course.  Nevertheless the responsiveness
+and concurrency of an event driven application is increased greatly because of
+overlapping I/O.
+
+<BR>
+
+
+
+
+<DT><B>Conflicts with Vendor Implementation</B><DD>
+
+There can be a conflict between the <B>Pth</B> <TT>pthread.h</TT> header and a possibly
+existing vendor <TT>/usr/include/pthread.h</TT> header which was implicitly included
+by some standard vendor headers (like <TT>/usr/include/unistd.h</TT>). When this
+occurs try to ``<TT>#define</TT>'' header-dependent values which prevent the
+inclusion of the vendor header.
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>Further Reading</H2>
+
+There is ``<I>The Single </I><FONT SIZE="-1"><I>UNIX</I></FONT><I> Specification, Version
+2 - Threads</I>'', from <I>The Open Group</I> of 1997 under
+<A HREF="http://www.opengroup.org/onlinepubs/007908799/xsh/threads.html.">http://www.opengroup.org/onlinepubs/007908799/xsh/threads.html.</A> This is
+a very complete publically available description of the Pthread <FONT SIZE="-1">API</FONT>. For
+convinience reasons, a translated copy of these freely available <FONT SIZE="-1">HTML</FONT>
+pages are appended to this manpage below. These are <I>Copyright (C) 1997
+The Open Group</I>.
+<P>
+
+Second, you can also buy the official standard from <FONT SIZE="-1">IEEE</FONT>. It is the <FONT SIZE="-1">IEEE</FONT>
+<FONT SIZE="-1">POSIX</FONT> 1003.1c-1995 standard (also known as <FONT SIZE="-1">ISO/IEC</FONT> 9945-1:1996), which
+is available as part of the <FONT SIZE="-1">ANSI/IEEE</FONT> 1003.1, 1996 edition, standard.
+<P>
+
+Finally you can look at the files <TT>pthread.c</TT> and <TT>pthread.h</TT> in the <B>Pth</B>
+source tree for details of the implementation, of course.
+<A NAME="lbAJ">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+pthread-<I><A HREF="http://localhost/cgi-bin/man/man2html?1+config">config</A></I>(1), <I><A HREF="http://localhost/cgi-bin/man/man2html?3+pth">pth</A></I>(3).
+<A NAME="lbAK">&nbsp;</A>
+<H2>AUTHOR</H2>
+
+<P>
+
+
+
+<PRE>
+ Ralf S. Engelschall
+ <A HREF="mailto:rse@engelschall.com">rse@engelschall.com</A>
+ <A HREF="http://www.engelschall.com">www.engelschall.com</A>
+
+
+</PRE>
+
+
+##
+##  The Single UNIX Specification, Version 2 - Threads
+##  <A HREF="http://www.opengroup.org/onlinepubs/007908799/xsh/threads.html">http://www.opengroup.org/onlinepubs/007908799/xsh/threads.html</A>
+##  Copyright (C) 1997 The Open Group, All Rights Reserved.
+##
+<A NAME="lbAL">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread.h</B> - threads
+<A NAME="lbAN">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<A NAME="lbAO">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>&lt;pthread.h</I>&gt;
+header defines the following symbols:
+<P>
+
+
+
+<PRE>
+ PTHREAD_CANCEL_ASYNCHRONOUS
+ PTHREAD_CANCEL_ENABLE
+ PTHREAD_CANCEL_DEFERRED
+ PTHREAD_CANCEL_DISABLE
+ PTHREAD_CANCELED
+ PTHREAD_COND_INITIALIZER
+ PTHREAD_CREATE_DETACHED
+ PTHREAD_CREATE_JOINABLE
+ PTHREAD_EXPLICIT_SCHED
+ PTHREAD_INHERIT_SCHED
+ PTHREAD_MUTEX_DEFAULT
+ PTHREAD_MUTEX_ERRORCHECK
+ PTHREAD_MUTEX_NORMAL
+ PTHREAD_MUTEX_INITIALIZER
+ PTHREAD_MUTEX_RECURSIVE
+ PTHREAD_ONCE_INIT
+ PTHREAD_PRIO_INHERIT
+ PTHREAD_PRIO_NONE
+ PTHREAD_PRIO_PROTECT
+ PTHREAD_PROCESS_SHARED
+ PTHREAD_PROCESS_PRIVATE
+ PTHREAD_RWLOCK_INITIALIZER
+ PTHREAD_SCOPE_PROCESS
+ PTHREAD_SCOPE_SYSTEM
+
+
+</PRE>
+
+
+The <B>pthread_attr_t</B>, <B>pthread_cond_t</B>, <B>pthread_condattr_t</B>,
+<B>pthread_key_t</B>, <B>pthread_mutex_t</B>, <B>pthread_mutexattr_t</B>,
+<B>pthread_once_t</B>, <B>pthread_rwlock_t</B>, <B>pthread_rwlockattr_t</B> and
+<B>pthread_t</B> types are defined as described in <I>&lt;sys/types.h</I>&gt;.
+<P>
+
+The following are declared as functions and may also be declared as
+macros. Function prototypes must be provided for use with an ISO C
+compiler.
+<P>
+
+
+
+<PRE>
+ int   pthread_attr_destroy(pthread_attr_t *);
+ int   pthread_attr_getdetachstate(const pthread_attr_t *, int *);
+ int   pthread_attr_getguardsize(const pthread_attr_t *, size_t *);
+ int   pthread_attr_getinheritsched(const pthread_attr_t *, int *);
+ int   pthread_attr_getschedparam(const pthread_attr_t *, struct sched_param *);
+ int   pthread_attr_getschedpolicy(const pthread_attr_t *, int *);
+ int   pthread_attr_getscope(const pthread_attr_t *, int *);
+ int   pthread_attr_getstackaddr(const pthread_attr_t *, void **);
+ int   pthread_attr_getstacksize(const pthread_attr_t *, size_t *);
+ int   pthread_attr_init(pthread_attr_t *);
+ int   pthread_attr_setdetachstate(pthread_attr_t *, int);
+ int   pthread_attr_setguardsize(pthread_attr_t *, size_t);
+ int   pthread_attr_setinheritsched(pthread_attr_t *, int);
+ int   pthread_attr_setschedparam(pthread_attr_t *, const struct sched_param *);
+ int   pthread_attr_setschedpolicy(pthread_attr_t *, int);
+ int   pthread_attr_setscope(pthread_attr_t *, int);
+ int   pthread_attr_setstackaddr(pthread_attr_t *, void *);
+ int   pthread_attr_setstacksize(pthread_attr_t *, size_t);
+ int   pthread_cancel(pthread_t);
+ void  pthread_cleanup_push(void*), void *);
+ void  pthread_cleanup_pop(int);
+ int   pthread_cond_broadcast(pthread_cond_t *);
+ int   pthread_cond_destroy(pthread_cond_t *);
+ int   pthread_cond_init(pthread_cond_t *, const pthread_condattr_t *);
+ int   pthread_cond_signal(pthread_cond_t *);
+ int   pthread_cond_timedwait(pthread_cond_t *, pthread_mutex_t *, const struct timespec *);
+ int   pthread_cond_wait(pthread_cond_t *, pthread_mutex_t *);
+ int   pthread_condattr_destroy(pthread_condattr_t *);
+ int   pthread_condattr_getpshared(const pthread_condattr_t *, int *);
+ int   pthread_condattr_init(pthread_condattr_t *);
+ int   pthread_condattr_setpshared(pthread_condattr_t *, int);
+ int   pthread_create(pthread_t *, const pthread_attr_t *, void *(*)(void *), void *);
+ int   pthread_detach(pthread_t);
+ int   pthread_equal(pthread_t, pthread_t);
+ void  pthread_exit(void *);
+ int   pthread_getconcurrency(void);
+ int   pthread_getschedparam(pthread_t, int *, struct sched_param *);
+ void *pthread_getspecific(pthread_key_t);
+ int   pthread_join(pthread_t, void **);
+ int   pthread_key_create(pthread_key_t *, void (*)(void *));
+ int   pthread_key_delete(pthread_key_t);
+ int   pthread_mutex_destroy(pthread_mutex_t *);
+ int   pthread_mutex_getprioceiling(const pthread_mutex_t *, int *);
+ int   pthread_mutex_init(pthread_mutex_t *, const pthread_mutexattr_t *);
+ int   pthread_mutex_lock(pthread_mutex_t *);
+ int   pthread_mutex_setprioceiling(pthread_mutex_t *, int, int *);
+ int   pthread_mutex_trylock(pthread_mutex_t *);
+ int   pthread_mutex_unlock(pthread_mutex_t *);
+ int   pthread_mutexattr_destroy(pthread_mutexattr_t *);
+ int   pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *, int *);
+ int   pthread_mutexattr_getprotocol(const pthread_mutexattr_t *, int *);
+ int   pthread_mutexattr_getpshared(const pthread_mutexattr_t *, int *);
+ int   pthread_mutexattr_gettype(const pthread_mutexattr_t *, int *);
+ int   pthread_mutexattr_init(pthread_mutexattr_t *);
+ int   pthread_mutexattr_setprioceiling(pthread_mutexattr_t *, int);
+ int   pthread_mutexattr_setprotocol(pthread_mutexattr_t *, int);
+ int   pthread_mutexattr_setpshared(pthread_mutexattr_t *, int);
+ int   pthread_mutexattr_settype(pthread_mutexattr_t *, int);
+ int   pthread_once(pthread_once_t *, void (*)(void));
+ int   pthread_rwlock_destroy(pthread_rwlock_t *);
+ int   pthread_rwlock_init(pthread_rwlock_t *, const pthread_rwlockattr_t *);
+ int   pthread_rwlock_rdlock(pthread_rwlock_t *);
+ int   pthread_rwlock_tryrdlock(pthread_rwlock_t *);
+ int   pthread_rwlock_trywrlock(pthread_rwlock_t *);
+ int   pthread_rwlock_unlock(pthread_rwlock_t *);
+ int   pthread_rwlock_wrlock(pthread_rwlock_t *);
+ int   pthread_rwlockattr_destroy(pthread_rwlockattr_t *);
+ int   pthread_rwlockattr_getpshared(const pthread_rwlockattr_t *, int *);
+ int   pthread_rwlockattr_init(pthread_rwlockattr_t *);
+ int   pthread_rwlockattr_setpshared(pthread_rwlockattr_t *, int);
+ pthread_t pthread_self(void);
+ int   pthread_setcancelstate(int, int *);
+ int   pthread_setcanceltype(int, int *);
+ int   pthread_setconcurrency(int);
+ int   pthread_setschedparam(pthread_t, int, const struct sched_param *);
+ int   pthread_setspecific(pthread_key_t, const void *);
+ void  pthread_testcancel(void);
+ int   pthread_attr_setweight_np(pthread_attr_t *, int);
+ int   pthread_attr_setsuspendstate_np(pthread_attr_t *, int);
+ int   pthread_attr_getsuspendstate_np(pthread_attr_t *, int *);
+ int   pthread_suspend_np(pthread_t);   /*ibm*/
+ int   pthread_resume_np(pthread_t);    /*ibm*/
+ int   pthread_getstacksize_np(pthread_t, int *); /*ibm*/
+ void *pthread_getcontext_np(pthread_t);  /*ibm*/
+
+
+</PRE>
+
+
+Inclusion of the <I>&lt;pthread.h</I>&gt; header will make visible symbols defined
+in the headers <I>&lt;sched.h</I>&gt; and <I>&lt;time.h</I>&gt;.
+<A NAME="lbAP">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+An interpretation request has been filed with IEEE PASC concerning
+requirements for visibility of symbols in this header.
+<A NAME="lbAQ">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbAR">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_getguardsize()</I>,
+<I>pthread_attr_setscope()</I>,
+<I>pthread_cancel()</I>,
+<I>pthread_cleanup_push()</I>,
+<I>pthread_cond_init()</I>,
+<I>pthread_cond_signal()</I>,
+<I>pthread_cond_wait()</I>,
+<I>pthread_condattr_init()</I>,
+<I>pthread_create()</I>,
+<I>pthread_detach()</I>,
+<I>pthread_equal()</I>,
+<I>pthread_exit()</I>,
+<I>pthread_getconcurrency()</I>,
+<I>pthread_getschedparam()</I>,
+<I>pthread_join()</I>,
+<I>pthread_key_create()</I>,
+<I>pthread_key_delete()</I>,
+<I>pthread_mutex_init()</I>,
+<I>pthread_mutex_lock()</I>,
+<I>pthread_mutex_setprioceiling()</I>,
+<I>pthread_mutexattr_init()</I>,
+<I>pthread_mutexattr_gettype()</I>,
+<I>pthread_mutexattr_setprotocol()</I>,
+<I>pthread_once()</I>,
+<I>pthread_self()</I>,
+<I>pthread_setcancelstate()</I>,
+<I>pthread_setspecific()</I>,
+<I>pthread_rwlock_init()</I>,
+<I>pthread_rwlock_rdlock()</I>,
+<I>pthread_rwlock_unlock()</I>,
+<I>pthread_rwlock_wrlock()</I>,
+<I>pthread_rwlockattr_init()</I>,
+<I>&lt;sched.h</I>&gt;,
+<I>&lt;time.h</I>&gt;.
+<A NAME="lbAS">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbAT">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_atfork</B> - register fork handlers
+<A NAME="lbAU">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/sys/types.h">sys/types.h</A>&gt;
+<P>
+
+#include &lt;<A HREF="file:/usr/include/unistd.h">unistd.h</A>&gt;
+<P>
+
+int <I>pthread_atfork</I>(void (*<I>prepare</I>)(void), void (*<I>parent</I>)(void),
+void (*<I>child</I>)(void));
+<A NAME="lbAV">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The <I>pthread_atfork()</I> function declares fork handlers to be called
+before and after <I>fork()</I>, in the context of the thread that called
+<I>fork()</I>. The <I>prepare</I> fork handler is called before <I>fork()</I>
+processing commences. The <I>parent</I> fork handle is called after
+<I>fork()</I> processing completes in the parent process. The <I>child</I> fork
+handler is called after <I>fork()</I> processing completes in the child
+process. If no handling is desired at one or more of these three points,
+the corresponding fork handler <I>address</I>(es) may be set to NULL.
+<P>
+
+The order of calls to <I>pthread_atfork()</I> is significant. The <I>parent</I>
+and <I>child</I> fork handlers are called in the order in which they were
+established by calls to <I>pthread_atfork()</I>. The <I>prepare</I> fork
+handlers are called in the opposite order.
+<A NAME="lbAW">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Upon successful completion, <I>pthread_atfork()</I> returns a value of zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbAX">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The <I>pthread_atfork()</I> function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOMEM</FONT>]<DD>
+
+Insufficient table space exists to record the fork handler addresses.
+</DL>
+<P>
+
+The <I>pthread_atfork()</I> function will not return an error code of
+[<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbAY">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbAZ">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbBA">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbBB">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>atexit()</I>,
+<I>fork()</I>,
+<I>&lt;sys/types.h</I>&gt;
+<A NAME="lbBC">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbBD">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_init,</B> <B>pthread_attr_destroy</B>
+- initialise and destroy threads attribute object
+<A NAME="lbBE">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_init</I>(pthread_attr_t *<I>attr</I>);
+<P>
+
+int <I>pthread_attr_destroy</I>(pthread_attr_t *<I>attr</I>);
+<A NAME="lbBF">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The function <I>pthread_attr_init()</I> initialises a thread attributes
+object <I>attr</I> with the default value for all of the individual
+attributes used by a given implementation.
+<P>
+
+The resulting attribute object (possibly modified by setting individual
+attribute values), when used by <I>pthread_create()</I>, defines the
+attributes of the thread created. A single attributes object can be used
+in multiple simultaneous calls to <I>pthread_create()</I>.
+<P>
+
+The <I>pthread_attr_destroy()</I> function is used to destroy a thread
+attributes object. An implementation may cause <I>pthread_attr_destroy()</I>
+to set <I>attr</I> to an implementation-dependent invalid value. The
+behaviour of using the attribute after it has been destroyed is
+undefined.
+<A NAME="lbBG">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Upon successful completion, <I>pthread_attr_init()</I> and
+<I>pthread_attr_destroy()</I> return a value of 0. Otherwise, an error
+number is returned to indicate the error.
+<A NAME="lbBH">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The <I>pthread_attr_init()</I> function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOMEM</FONT>]<DD>
+
+Insufficient memory exists to initialise the thread attributes object.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbBI">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbBJ">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbBK">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbBL">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_setstackaddr()</I>,
+<I>pthread_attr_setstacksize()</I>,
+<I>pthread_attr_setdetachstate()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbBM">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbBN">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setdetachstate,</B> <B>pthread_attr_getdetachstate</B>
+- set and get detachstate attribute
+<A NAME="lbBO">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setdetachstate</I>(pthread_attr_t *<I>attr</I>, int <I>detachstate</I>);
+<P>
+
+int <I>pthread_attr_getdetachstate</I>(const pthread_attr_t *<I>attr</I>, int *<I>detachstate</I>);
+<A NAME="lbBP">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The <I>detachstate</I> attribute controls whether the thread is created in a
+detached state. If the thread is created detached, then use of the ID of
+the newly created thread by the <I>pthread_detach()</I> or <I>pthread_join()</I>
+function is an error.
+<P>
+
+The <I>pthread_attr_setdetachstate()</I> and
+<I>pthread_attr_getdetachstate()</I>, respectively, set and get the
+<I>detachstate</I> attribute in the <I>attr</I> object.
+<P>
+
+The <I>detachstate</I> can be set to either PTHREAD_CREATE_DETACHED or
+PTHREAD_CREATE_JOINABLE. A value of PTHREAD_CREATE_DETACHED causes
+all threads created with <I>attr</I> to be in the detached state, whereas
+using a value of PTHREAD_CREATE_JOINABLE causes all threads created
+with <I>attr</I> to be in the joinable state. The default value of the
+<I>detachstate</I> attribute is PTHREAD_CREATE_JOINABLE .
+<A NAME="lbBQ">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Upon successful completion, <I>pthread_attr_setdetachstate()</I> and
+<I>pthread_attr_getdetachstate()</I> return a value of 0. Otherwise, an
+error number is returned to indicate the error.
+<P>
+
+The <I>pthread_attr_getdetachstate()</I> function stores the value of the
+<I>detachstate</I> attribute in <I>detachstate</I> if successful.
+<A NAME="lbBR">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The <I>pthread_attr_setdetachstate()</I> function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of <I>detachstate</I> was not valid
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbBS">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbBT">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbBU">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbBV">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setstackaddr()</I>,
+<I>pthread_attr_setstacksize()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbBW">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbBX">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_getguardsize,</B> <B>pthread_attr_setguardsize</B> -
+get or set the thread guardsize attribute
+<A NAME="lbBY">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_getguardsize</I>(const pthread_attr_t <I>*attr</I>, size_t
+<I>*guardsize</I>); int <I>pthread_attr_setguardsize</I>(pthread_attr_t <I>*attr</I>,
+size_t <I>guardsize</I>);
+<A NAME="lbBZ">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The <I>guardsize</I> attribute controls the size of the guard area for the
+created thread's stack. The <I>guardsize</I> attribute provides protection
+against overflow of the stack pointer. If a thread's stack is created
+with guard protection, the implementation allocates extra memory at the
+overflow end of the stack as a buffer against stack overflow of the
+stack pointer. If an application overflows into this buffer an error
+results (possibly in a SIGSEGV signal being delivered to the thread).
+<P>
+
+The <I>guardsize</I> attribute is provided to the application
+for two reasons:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>1.<DD>
+
+Overflow protection can potentially result in wasted system resources.
+An application that creates a large number of threads, and which knows
+its threads will never overflow their stack, can save system resources
+by turning off guard areas.
+
+<BR>
+
+
+
+
+<DT>2.<DD>
+
+When threads allocate large data structures on the stack,
+large guard areas may be needed to detect stack overflow.
+</DL>
+<P>
+
+The <I>pthread_attr_getguardsize()</I> function gets the <I>guardsize</I>
+attribute in the <I>attr</I> object. This attribute is returned in the
+<I>guardsize</I> parameter.
+<P>
+
+The <I>pthread_attr_setguardsize()</I> function sets the <I>guardsize</I>
+attribute in the <I>attr</I> object. The new value of this attribute is
+obtained from the <I>guardsize</I> parameter. If <I>guardsize</I> is zero,
+a guard area will not be provided for threads created with <I>attr</I>.
+If <I>guardsize</I> is greater than zero, a guard area of at least size
+<I>guardsize</I> bytes is provided for each thread created with <I>attr</I>.
+<P>
+
+A conforming implementation is permitted to round up the value
+contained in <I>guardsize</I> to a multiple of the configurable system
+variable <FONT SIZE="-1">PAGESIZE</FONT> (see <I>&lt;sys/mman.h</I>&gt;). If an implementation rounds
+up the value of <I>guardsize</I> to a multiple of <FONT SIZE="-1">PAGESIZE</FONT>, a call to
+<I>pthread_attr_getguardsize()</I> specifying <I>attr</I> will store in the
+<I>guardsize</I> parameter the guard size specified by the previous
+<I>pthread_attr_setguardsize()</I> function call.
+<P>
+
+The default value of the <I>guardsize</I> attribute is <FONT SIZE="-1">PAGESIZE</FONT> bytes. The
+actual value of <FONT SIZE="-1">PAGESIZE</FONT> is implementation-dependent and may not be the
+same on all implementations.
+<P>
+
+If the <I>stackaddr</I> attribute has been set (that is, the caller is
+allocating and managing its own thread stacks), the <I>guardsize</I>
+attribute is ignored and no protection will be provided by the
+implementation. It is the responsibility of the application to manage
+stack overflow along with stack allocation and management in this case.
+<A NAME="lbCA">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the <I>pthread_attr_getguardsize()</I> and
+<I>pthread_attr_setguardsize()</I> functions return zero. Otherwise, an
+error number is returned to indicate the error.
+<A NAME="lbCB">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The <I>pthread_attr_getguardsize()</I> and <I>pthread_attr_setguardsize()</I>
+functions will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The attribute <I>attr</I> is invalid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The parameter <I>guardsize</I> is invalid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The parameter <I>guardsize</I> contains an invalid value.
+</DL>
+<A NAME="lbCC">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbCD">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbCE">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbCF">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbCG">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbCH">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setinheritsched,</B> <B>pthread_attr_getinheritsched</B>
+- set and get inheritsched attribute
+(<B>REALTIME THREADS</B>)
+<A NAME="lbCI">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setinheritsched</I>(pthread_attr_t *<I>attr</I>,
+int <I>inheritsched</I>);
+int <I>pthread_attr_getinheritsched</I>(const pthread_attr_t *<I>attr</I>,
+int *<I>inheritsched</I>);
+<A NAME="lbCJ">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The functions <I>pthread_attr_setinheritsched()</I> and
+<I>pthread_attr_getinheritsched()</I>, respectively, set and get the
+<I>inheritsched</I> attribute in the <I>attr</I> argument.
+<P>
+
+When the attribute objects are used by <I>pthread_create()</I>, the
+<I>inheritsched</I> attribute determines how the other scheduling attributes
+of the created thread are to be set:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT><FONT SIZE="-1">PTHREAD_INHERIT_SCHED</FONT><DD>
+
+Specifies that the scheduling policy and associated attributes are to
+be inherited from the creating thread, and the scheduling attributes in
+this <I>attr</I> argument are to be ignored.
+
+<BR>
+
+
+
+
+<DT><FONT SIZE="-1">PTHREAD_EXPLICIT_SCHED</FONT><DD>
+
+Specifies that the scheduling policy and associated attributes
+are to be set to the corresponding values from this attribute object.
+</DL>
+<P>
+
+The symbols <FONT SIZE="-1">PTHREAD_INHERIT_SCHED</FONT> and <FONT SIZE="-1">PTHREAD_EXPLICIT_SCHED</FONT> are defined
+in the header <I>&lt;pthread.h</I>&gt;.
+<A NAME="lbCK">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the <I>pthread_attr_setinheritsched()</I> and
+<I>pthread_attr_getinheritsched()</I> functions return zero. Otherwise, an
+error number is returned to indicate the error.
+<A NAME="lbCL">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The <I>pthread_attr_setinheritsched()</I> and
+<I>pthread_attr_getinheritsched()</I> functions will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOSYS</FONT>]<DD>
+
+The option _POSIX_THREAD_PRIORITY_SCHEDULING is not defined and the
+implementation does not support the function.
+</DL>
+<P>
+
+The
+<I>pthread_attr_setinheritsched()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of the attribute being set is not valid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOTSUP</FONT>]<DD>
+
+An attempt was made to set the attribute to an unsupported value.
+</DL>
+<A NAME="lbCM">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbCN">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+After these attributes have been set, a thread can be created with the
+specified attributes using <I>pthread_create()</I>. Using these routines
+does not affect the current running thread.
+<A NAME="lbCO">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbCP">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setscope()</I>,
+<I>pthread_attr_setschedpolicy()</I>,
+<I>pthread_attr_setschedparam()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;,
+<I>pthread_setschedparam()</I>,
+<I>&lt;sched.h</I>&gt;.
+<A NAME="lbCQ">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbCR">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setschedparam,</B> <B>pthread_attr_getschedparam</B>
+- set and get schedparam attribute
+<A NAME="lbCS">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setschedparam</I>(pthread_attr_t *<I>attr</I>, const struct sched_param *<I>param</I>);
+<P>
+
+int <I>pthread_attr_getschedparam</I>(const pthread_attr_t *<I>attr</I>, struct sched_param *<I>param</I>);
+<A NAME="lbCT">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The functions <I>pthread_attr_setschedparam()</I> and
+<I>pthread_attr_getschedparam()</I>, respectively, set and get the
+scheduling parameter attributes in the <I>attr</I> argument. The contents of
+the <I>param</I> structure are defined in <I>&lt;sched.h</I>&gt;. For the SCHED_FIFO
+and SCHED_RR policies, the only required member of <I>param</I> is
+<I>sched_priority</I>.
+<A NAME="lbCU">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the <I>pthread_attr_setschedparam()</I> and
+<I>pthread_attr_getschedparam()</I> functions return zero. Otherwise, an
+error number is returned to indicate the error.
+<A NAME="lbCV">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The <I>pthread_attr_setschedparam()</I> function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of the attribute being set is not valid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOTSUP</FONT>]<DD>
+
+An attempt was made to set the attribute to an unsupported value.
+</DL>
+<P>
+
+The
+<I>pthread_attr_setschedparam()</I>
+and
+<I>pthread_attr_getschedparam()</I>
+functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbCW">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbCX">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+After these attributes have been set, a thread can be created with the
+specified attributes using <I>pthread_create()</I>. Using these routines
+does not affect the current running thread.
+<A NAME="lbCY">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbCZ">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setscope()</I>,
+<I>pthread_attr_setinheritsched()</I>,
+<I>pthread_attr_setschedpolicy()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;,
+<I>pthread_setschedparam()</I>,
+<I>&lt;sched.h</I>&gt;.
+<A NAME="lbDA">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbDB">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setschedpolicy,</B> <B>pthread_attr_getschedpolicy</B>
+- set and get schedpolicy attribute
+(<B>REALTIME THREADS</B>)
+<A NAME="lbDC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setschedpolicy</I>(pthread_attr_t *<I>attr</I>, int <I>policy</I>);
+int <I>pthread_attr_getschedpolicy</I>(const pthread_attr_t *<I>attr</I>,
+int *<I>policy</I>);
+<A NAME="lbDD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The functions <I>pthread_attr_setschedpolicy()</I> and
+<I>pthread_attr_getschedpolicy()</I>, respectively, set and get the
+<I>schedpolicy</I> attribute in the <I>attr</I> argument.
+<P>
+
+The supported values of <I>policy</I> include SCHED_FIFO, SCHED_RR and
+SCHED_OTHER, which are defined by the header <I>&lt;sched.h</I>&gt;. When threads
+executing with the scheduling policy SCHED_FIFO or SCHED_RR are waiting
+on a mutex, they acquire the mutex in priority order when the mutex is
+unlocked.
+<A NAME="lbDE">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the <I>pthread_attr_setschedpolicy()</I> and
+<I>pthread_attr_getschedpolicy()</I> functions return zero. Otherwise, an
+error number is returned to indicate the error.
+<A NAME="lbDF">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The <I>pthread_attr_setschedpolicy()</I> and
+<I>pthread_attr_getschedpolicy()</I> functions will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOSYS</FONT>]<DD>
+
+The option _POSIX_THREAD_PRIORITY_SCHEDULING is not defined and the
+implementation does not support the function.
+</DL>
+<P>
+
+The <I>pthread_attr_setschedpolicy()</I> function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of the attribute being set is not valid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOTSUP</FONT>]<DD>
+
+An attempt was made to set the attribute to an unsupported value.
+</DL>
+<A NAME="lbDG">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbDH">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+After these attributes have been set, a thread can be created with the
+specified attributes using <I>pthread_create()</I>. Using these routines
+does not affect the current running thread.
+<A NAME="lbDI">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbDJ">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setscope()</I>,
+<I>pthread_attr_setinheritsched()</I>,
+<I>pthread_attr_setschedparam()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;,
+<I>pthread_setschedparam()</I>,
+<I>&lt;sched.h</I>&gt;.
+<A NAME="lbDK">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbDL">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setscope,</B> <B>pthread_attr_getscope</B>
+- set and get contentionscope attribute
+(<B>REALTIME THREADS</B>)
+<A NAME="lbDM">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setscope</I>(pthread_attr_t *<I>attr</I>, int <I>contentionscope</I>);
+int <I>pthread_attr_getscope</I>(const pthread_attr_t *<I>attr</I>,
+int *<I>contentionscope</I>);
+<A NAME="lbDN">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The <I>pthread_attr_setscope()</I> and <I>pthread_attr_getscope()</I> functions
+are used to set and get the <I>contentionscope</I> attribute in the <I>attr</I>
+object.
+<P>
+
+The <I>contentionscope</I> attribute may have the values
+PTHREAD_SCOPE_SYSTEM, signifying system scheduling contention scope, or
+PTHREAD_SCOPE_PROCESS, signifying process scheduling contention scope.
+The symbols PTHREAD_SCOPE_SYSTEM and PTHREAD_SCOPE_PROCESS are defined
+by the header <I>&lt;pthread.h</I>&gt;.
+<A NAME="lbDO">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the <I>pthread_attr_setscope()</I> and
+<I>pthread_attr_getscope()</I> functions return zero. Otherwise, an error
+number is returned to indicate the error.
+<A NAME="lbDP">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The <I>pthread_attr_setscope()</I> and <I>pthread_attr_getscope()</I> functions
+will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOSYS</FONT>]<DD>
+
+The option _POSIX_THREAD_PRIORITY_SCHEDULING is not defined and the
+implementation does not support the function.
+</DL>
+<P>
+
+The
+<I>pthread_attr_setscope()</I>,
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of the attribute being set is not valid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOTSUP</FONT>]<DD>
+
+An attempt was made to set the attribute to an unsupported value.
+</DL>
+<A NAME="lbDQ">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbDR">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+After these attributes have been set, a thread can be created with the
+specified attributes using <I>pthread_create()</I>. Using these routines
+does not affect the current running thread.
+<A NAME="lbDS">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbDT">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setinheritsched()</I>,
+<I>pthread_attr_setschedpolicy()</I>,
+<I>pthread_attr_setschedparam()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;,
+<I>pthread_setschedparam()</I>,
+<I>&lt;sched.h</I>&gt;.
+<A NAME="lbDU">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbDV">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setstackaddr,</B> <B>pthread_attr_getstackaddr</B>
+- set and get stackaddr attribute
+<A NAME="lbDW">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setstackaddr</I>(pthread_attr_t *<I>attr</I>, void *<I>stackaddr</I>);
+<P>
+
+int <I>pthread_attr_getstackaddr</I>(const pthread_attr_t *<I>attr</I>, void **<I>stackaddr</I>);
+<A NAME="lbDX">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The functions <I>pthread_attr_setstackaddr()</I> and
+<I>pthread_attr_getstackaddr()</I>, respectively, set and get the thread
+creation <I>stackaddr</I> attribute in the <I>attr</I> object.
+<P>
+
+The <I>stackaddr</I> attribute specifies the location of storage to be used
+for the created thread's stack. The size of the storage is at least
+PTHREAD_STACK_MIN.
+<A NAME="lbDY">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Upon successful completion, <I>pthread_attr_setstackaddr()</I> and
+<I>pthread_attr_getstackaddr()</I> return a value of 0. Otherwise, an error
+number is returned to indicate the error.
+<P>
+
+The <I>pthread_attr_getstackaddr()</I> function stores the <I>stackaddr</I>
+attribute value in <I>stackaddr</I> if successful.
+<A NAME="lbDZ">&nbsp;</A>
+<H2>ERRORS</H2>
+
+No errors are defined.
+<P>
+
+These functions will not return an error code of [EINTR].
+<A NAME="lbEA">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbEB">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbEC">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbED">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setdetachstate()</I>,
+<I>pthread_attr_setstacksize()</I>,
+<I>pthread_create()</I>,
+<I>&lt;limits.h</I>&gt;,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbEE">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbEF">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setstacksize,</B> <B>pthread_attr_getstacksize</B>
+- set and get stacksize attribute
+<A NAME="lbEG">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setstacksize</I>(pthread_attr_t *<I>attr</I>, size_t <I>stacksize</I>);
+int <I>pthread_attr_getstacksize</I>(const pthread_attr_t *<I>attr</I>,
+size_t *<I>stacksize</I>);
+<A NAME="lbEH">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The functions
+<I>pthread_attr_setstacksize()</I>
+and
+<I>pthread_attr_getstacksize()</I>,
+respectively, set and get the thread creation
+<I>stacksize</I>
+attribute in the
+<I>attr</I>
+object.
+<P>
+
+The
+<I>stacksize</I>
+attribute defines the minimum stack size (in bytes) allocated for
+the created threads stack.
+<A NAME="lbEI">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Upon successful completion,
+<I>pthread_attr_setstacksize()</I>
+and
+<I>pthread_attr_getstacksize()</I>
+return a value of 0.
+Otherwise, an error number is returned to indicate the error.
+The
+<I>pthread_attr_getstacksize()</I>
+function stores the
+<I>stacksize</I>
+attribute value in
+<I>stacksize</I>
+if successful.
+<A NAME="lbEJ">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_attr_setstacksize()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of
+<I>stacksize</I>
+is less than <FONT SIZE="-1">PTHREAD_STACK_MIN</FONT> or exceeds a system-imposed limit.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbEK">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbEL">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbEM">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbEN">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setstackaddr()</I>,
+<I>pthread_attr_setdetachstate()</I>,
+<I>pthread_create()</I>,
+<I>&lt;limits.h</I>&gt;,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbEO">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbEP">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_init,</B> <B>pthread_attr_destroy</B>
+- initialise and destroy threads attribute object
+<A NAME="lbEQ">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_init</I>(pthread_attr_t *<I>attr</I>);
+int <I>pthread_attr_destroy</I>(pthread_attr_t *<I>attr</I>);
+<A NAME="lbER">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The function
+<I>pthread_attr_init()</I>
+initialises a thread attributes object
+<I>attr</I>
+with the default value for all of the individual attributes
+used by a given implementation.
+<P>
+
+The resulting attribute object
+(possibly modified by setting individual attribute values),
+when used by
+<I>pthread_create()</I>,
+defines the attributes of the thread created.
+A single attributes object can be used in multiple simultaneous calls to
+<I>pthread_create()</I>.
+<P>
+
+The
+<I>pthread_attr_destroy()</I>
+function is used to destroy a thread attributes object.
+An implementation may cause
+<I>pthread_attr_destroy()</I>
+to set
+<I>attr</I>
+to an implementation-dependent invalid value.
+The behaviour of using the attribute after it has been destroyed is undefined.
+<A NAME="lbES">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Upon successful completion,
+<I>pthread_attr_init()</I>
+and
+<I>pthread_attr_destroy()</I>
+return a value of 0.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbET">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_attr_init()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOMEM</FONT>]<DD>
+
+Insufficient memory exists to initialise the thread attributes object.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbEU">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbEV">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbEW">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbEX">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_setstackaddr()</I>,
+<I>pthread_attr_setstacksize()</I>,
+<I>pthread_attr_setdetachstate()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbEY">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbEZ">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setdetachstate,</B> <B>pthread_attr_getdetachstate</B>
+- set and get detachstate attribute
+<A NAME="lbFA">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setdetachstate</I>(pthread_attr_t *<I>attr</I>, int <I>detachstate</I>);
+int <I>pthread_attr_getdetachstate</I>(const pthread_attr_t *<I>attr</I>,
+int *<I>detachstate</I>);
+<A NAME="lbFB">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>detachstate</I>
+attribute controls whether the thread is created in a detached state.
+If the thread is created detached,
+then use of the ID of the newly created thread by the
+<I>pthread_detach()</I>
+or
+<I>pthread_join()</I>
+function is an error.
+<P>
+
+The
+<I>pthread_attr_setdetachstate()</I>
+and
+<I>pthread_attr_getdetachstate()</I>,
+respectively, set and get the
+<I>detachstate</I>
+attribute in the
+<I>attr</I>
+object.
+<P>
+
+The
+<I>detachstate</I>
+can be set to either PTHREAD_CREATE_DETACHED or PTHREAD_CREATE_JOINABLE.
+A value of PTHREAD_CREATE_DETACHED causes all threads created with
+<I>attr</I>
+to be in the detached state, whereas using a value of
+PTHREAD_CREATE_JOINABLE
+causes all threads created with
+<I>attr</I>
+to be in the joinable state.
+The default value of the
+<I>detachstate</I>
+attribute is
+PTHREAD_CREATE_JOINABLE .
+<A NAME="lbFC">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Upon successful completion,
+<I>pthread_attr_setdetachstate()</I>
+and
+<I>pthread_attr_getdetachstate()</I>
+return a value of 0.
+Otherwise, an error number is returned to indicate the error.
+<P>
+
+The
+<I>pthread_attr_getdetachstate()</I>
+function stores the value of the
+<I>detachstate</I>
+attribute in
+<I>detachstate</I>
+if successful.
+<A NAME="lbFD">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_attr_setdetachstate()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of
+<I>detachstate</I>
+was not valid
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbFE">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbFF">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbFG">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbFH">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setstackaddr()</I>,
+<I>pthread_attr_setstacksize()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbFI">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbFJ">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_getguardsize,</B> <B>pthread_attr_setguardsize</B> -
+get or set the thread guardsize attribute
+<A NAME="lbFK">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_getguardsize</I>(const pthread_attr_t <I>*attr</I>,
+size_t <I>*guardsize</I>);
+int <I>pthread_attr_setguardsize</I>(pthread_attr_t <I>*attr</I>,
+size_t <I>guardsize</I>);
+<A NAME="lbFL">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The <I>guardsize</I> attribute controls the size
+of the guard area for the created thread's stack. The <I>guardsize</I>
+attribute provides protection against overflow of the
+stack pointer. If a thread's stack is created with guard
+protection, the implementation allocates extra
+memory at the overflow end of the stack as a buffer against
+stack overflow of the stack pointer. If an application
+overflows into this buffer an error results (possibly
+in a SIGSEGV signal being delivered to the thread).
+<P>
+
+The <I>guardsize</I> attribute is provided to the application
+for two reasons:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>1.<DD>
+
+Overflow protection can potentially
+result in wasted system resources. An application that creates a large
+number of threads, and which knows its threads will never overflow
+their stack, can save system resources by turning off guard areas.
+
+<BR>
+
+
+
+
+<DT>2.<DD>
+
+When threads allocate large data structures on the stack,
+large guard areas may be needed to detect stack overflow.
+</DL>
+<P>
+
+The
+<I>pthread_attr_getguardsize()</I>
+function gets the
+<I>guardsize</I> attribute in the <I>attr</I> object. This attribute is
+returned in the <I>guardsize</I> parameter.
+<P>
+
+The
+<I>pthread_attr_setguardsize()</I>
+function sets the
+<I>guardsize</I> attribute in the <I>attr</I> object. The new value of
+this attribute is obtained from the <I>guardsize</I> parameter.
+If <I>guardsize</I> is zero, a guard area will not be
+provided for threads created with <I>attr</I>. If <I>guardsize</I> is
+greater
+than zero, a guard area of at least size <I>guardsize</I>
+bytes is provided for each thread created with <I>attr</I>.
+<P>
+
+A conforming implementation is permitted to round up
+the value contained in <I>guardsize</I> to a multiple
+of the configurable system variable <FONT SIZE="-1">PAGESIZE</FONT> (see
+<I>&lt;sys/mman.h</I>&gt;).
+If an implementation rounds up the
+value of <I>guardsize</I> to a multiple of <FONT SIZE="-1">PAGESIZE</FONT>, a call to
+<I>pthread_attr_getguardsize()</I>
+specifying <I>attr</I> will
+store in the <I>guardsize</I> parameter the guard size specified by the
+previous
+<I>pthread_attr_setguardsize()</I>
+function call.
+<P>
+
+The default value of the <I>guardsize</I> attribute is <FONT SIZE="-1">PAGESIZE</FONT> bytes.
+The actual value of <FONT SIZE="-1">PAGESIZE</FONT> is
+implementation-dependent and may not be the same on all implementations.
+<P>
+
+If the <I>stackaddr</I> attribute has been set (that is, the caller
+is allocating and managing its own thread stacks), the
+<I>guardsize</I> attribute is ignored and no protection
+will be provided by the implementation. It is the
+responsibility of the application to manage stack overflow
+along with stack allocation and management in this
+case.
+<A NAME="lbFM">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_attr_getguardsize()</I>
+and
+<I>pthread_attr_setguardsize()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbFN">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_attr_getguardsize()</I>
+and
+<I>pthread_attr_setguardsize()</I>
+functions will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The attribute <I>attr</I> is invalid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The parameter <I>guardsize</I> is invalid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The parameter <I>guardsize</I> contains an invalid value.
+</DL>
+<A NAME="lbFO">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbFP">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbFQ">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbFR">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbFS">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbFT">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setinheritsched,</B> <B>pthread_attr_getinheritsched</B>
+- set and get inheritsched attribute
+(<B>REALTIME THREADS</B>)
+<A NAME="lbFU">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setinheritsched</I>(pthread_attr_t *<I>attr</I>,
+int <I>inheritsched</I>);
+int <I>pthread_attr_getinheritsched</I>(const pthread_attr_t *<I>attr</I>,
+int *<I>inheritsched</I>);
+<A NAME="lbFV">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The functions
+<I>pthread_attr_setinheritsched()</I>
+and
+<I>pthread_attr_getinheritsched()</I>,
+respectively, set and get the
+<I>inheritsched</I>
+attribute in the
+<I>attr</I>
+argument.
+<P>
+
+When the attribute objects are used by
+<I>pthread_create()</I>,
+the
+<I>inheritsched</I>
+attribute determines how the other scheduling attributes of
+the created thread are to be set:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT><FONT SIZE="-1">PTHREAD_INHERIT_SCHED</FONT><DD>
+
+Specifies that the scheduling policy and associated attributes
+are to be inherited from the creating thread, and the scheduling
+attributes in this
+<I>attr</I>
+argument are to be ignored.
+
+<BR>
+
+
+
+
+<DT><FONT SIZE="-1">PTHREAD_EXPLICIT_SCHED</FONT><DD>
+
+Specifies that the scheduling policy and associated attributes
+are to be set to the corresponding values from this attribute object.
+</DL>
+<P>
+
+The symbols <FONT SIZE="-1">PTHREAD_INHERIT_SCHED</FONT> and <FONT SIZE="-1">PTHREAD_EXPLICIT_SCHED</FONT>
+are defined in the header
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbFW">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_attr_setinheritsched()</I>
+and
+<I>pthread_attr_getinheritsched()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbFX">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_attr_setinheritsched()</I>
+and
+<I>pthread_attr_getinheritsched()</I>
+functions will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOSYS</FONT>]<DD>
+
+The option _POSIX_THREAD_PRIORITY_SCHEDULING is not defined and the
+implementation does not support the function.
+</DL>
+<P>
+
+The
+<I>pthread_attr_setinheritsched()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of the attribute being set is not valid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOTSUP</FONT>]<DD>
+
+An attempt was made to set the attribute to an unsupported value.
+</DL>
+<A NAME="lbFY">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbFZ">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+After these attributes have been set, a thread can be created with
+the specified attributes using
+<I>pthread_create()</I>.
+Using these routines does not affect the current running thread.
+<A NAME="lbGA">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbGB">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setscope()</I>,
+<I>pthread_attr_setschedpolicy()</I>,
+<I>pthread_attr_setschedparam()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;,
+<I>pthread_setschedparam()</I>,
+<I>&lt;sched.h</I>&gt;.
+<A NAME="lbGC">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbGD">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setschedparam,</B> <B>pthread_attr_getschedparam</B>
+- set and get schedparam attribute
+<A NAME="lbGE">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setschedparam</I>(pthread_attr_t *<I>attr</I>,
+const struct sched_param *<I>param</I>);
+int <I>pthread_attr_getschedparam</I>(const pthread_attr_t *<I>attr</I>,
+struct sched_param *<I>param</I>);
+<A NAME="lbGF">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The functions
+<I>pthread_attr_setschedparam()</I>
+and
+<I>pthread_attr_getschedparam()</I>,
+respectively, set and get the scheduling parameter
+attributes in the
+<I>attr</I>
+argument.
+The contents of the
+<I>param</I>
+structure are defined in
+<I>&lt;sched.h</I>&gt;.
+For the SCHED_FIFO and SCHED_RR policies,
+the only required member of
+<I>param</I>
+is
+<I>sched_priority</I>.
+<A NAME="lbGG">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_attr_setschedparam()</I>
+and
+<I>pthread_attr_getschedparam()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbGH">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_attr_setschedparam()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of the attribute being set is not valid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOTSUP</FONT>]<DD>
+
+An attempt was made to set the attribute to an unsupported value.
+</DL>
+<P>
+
+The
+<I>pthread_attr_setschedparam()</I>
+and
+<I>pthread_attr_getschedparam()</I>
+functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbGI">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbGJ">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+After these attributes have been set, a thread can be created with
+the specified attributes using
+<I>pthread_create()</I>.
+Using these routines does not affect the current running thread.
+<A NAME="lbGK">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbGL">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setscope()</I>,
+<I>pthread_attr_setinheritsched()</I>,
+<I>pthread_attr_setschedpolicy()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;,
+<I>pthread_setschedparam()</I>,
+<I>&lt;sched.h</I>&gt;.
+<A NAME="lbGM">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbGN">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setschedpolicy,</B> <B>pthread_attr_getschedpolicy</B>
+- set and get schedpolicy attribute
+(<B>REALTIME THREADS</B>)
+<A NAME="lbGO">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setschedpolicy</I>(pthread_attr_t *<I>attr</I>, int <I>policy</I>);
+int <I>pthread_attr_getschedpolicy</I>(const pthread_attr_t *<I>attr</I>,
+int *<I>policy</I>);
+<A NAME="lbGP">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The functions
+<I>pthread_attr_setschedpolicy()</I>
+and
+<I>pthread_attr_getschedpolicy()</I>,
+respectively, set and get the
+<I>schedpolicy</I>
+attribute in the
+<I>attr</I>
+argument.
+<P>
+
+The supported values of
+<I>policy</I>
+include SCHED_FIFO, SCHED_RR and SCHED_OTHER,
+which are defined by the header
+<I>&lt;sched.h</I>&gt;.
+When threads executing with the scheduling policy
+SCHED_FIFO or SCHED_RR are waiting on a mutex,
+they acquire the mutex in priority order when the mutex is unlocked.
+<A NAME="lbGQ">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_attr_setschedpolicy()</I>
+and
+<I>pthread_attr_getschedpolicy()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbGR">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_attr_setschedpolicy()</I>
+and
+<I>pthread_attr_getschedpolicy()</I>
+functions will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOSYS</FONT>]<DD>
+
+The option _POSIX_THREAD_PRIORITY_SCHEDULING is not defined and the
+implementation does not support the function.
+</DL>
+<P>
+
+The
+<I>pthread_attr_setschedpolicy()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of the attribute being set is not valid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOTSUP</FONT>]<DD>
+
+An attempt was made to set the attribute to an unsupported value.
+</DL>
+<A NAME="lbGS">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbGT">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+After these attributes have been set, a thread can be created with
+the specified attributes using
+<I>pthread_create()</I>.
+Using these routines does not affect the current running thread.
+<A NAME="lbGU">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbGV">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setscope()</I>,
+<I>pthread_attr_setinheritsched()</I>,
+<I>pthread_attr_setschedparam()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;,
+<I>pthread_setschedparam()</I>,
+<I>&lt;sched.h</I>&gt;.
+<A NAME="lbGW">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbGX">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setscope,</B> <B>pthread_attr_getscope</B>
+- set and get contentionscope attribute
+(<B>REALTIME THREADS</B>)
+<A NAME="lbGY">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setscope</I>(pthread_attr_t *<I>attr</I>, int <I>contentionscope</I>);
+int <I>pthread_attr_getscope</I>(const pthread_attr_t *<I>attr</I>,
+int *<I>contentionscope</I>);
+<A NAME="lbGZ">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_attr_setscope()</I>
+and
+<I>pthread_attr_getscope()</I>
+functions are used to set and get the
+<I>contentionscope</I>
+attribute in the
+<I>attr</I>
+object.
+<P>
+
+The
+<I>contentionscope</I>
+attribute may have the values
+PTHREAD_SCOPE_SYSTEM,
+signifying system scheduling contention scope,
+or PTHREAD_SCOPE_PROCESS,
+signifying process scheduling contention scope.
+The symbols PTHREAD_SCOPE_SYSTEM and PTHREAD_SCOPE_PROCESS
+are defined by the header
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbHA">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_attr_setscope()</I>
+and
+<I>pthread_attr_getscope()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbHB">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_attr_setscope()</I>
+and
+<I>pthread_attr_getscope()</I>
+functions will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOSYS</FONT>]<DD>
+
+The option _POSIX_THREAD_PRIORITY_SCHEDULING is not defined and the
+implementation does not support the function.
+</DL>
+<P>
+
+The
+<I>pthread_attr_setscope()</I>,
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of the attribute being set is not valid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOTSUP</FONT>]<DD>
+
+An attempt was made to set the attribute to an unsupported value.
+</DL>
+<A NAME="lbHC">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbHD">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+After these attributes have been set, a thread can be created with
+the specified attributes using
+<I>pthread_create()</I>.
+Using these routines does not affect the current running thread.
+<A NAME="lbHE">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbHF">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setinheritsched()</I>,
+<I>pthread_attr_setschedpolicy()</I>,
+<I>pthread_attr_setschedparam()</I>,
+<I>pthread_create()</I>,
+<I>&lt;pthread.h</I>&gt;,
+<I>pthread_setschedparam()</I>,
+<I>&lt;sched.h</I>&gt;.
+<A NAME="lbHG">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbHH">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setstackaddr,</B> <B>pthread_attr_getstackaddr</B>
+- set and get stackaddr attribute
+<A NAME="lbHI">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setstackaddr</I>(pthread_attr_t *<I>attr</I>, void *<I>stackaddr</I>);
+int <I>pthread_attr_getstackaddr</I>(const pthread_attr_t *<I>attr</I>,
+void **<I>stackaddr</I>);
+<A NAME="lbHJ">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The functions
+<I>pthread_attr_setstackaddr()</I>
+and
+<I>pthread_attr_getstackaddr()</I>,
+respectively, set and get the thread creation
+<I>stackaddr</I>
+attribute in the
+<I>attr</I>
+object.
+<P>
+
+The
+<I>stackaddr</I>
+attribute specifies the location of storage
+to be used for the created thread's stack.
+The size of the storage is at least PTHREAD_STACK_MIN.
+<A NAME="lbHK">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Upon successful completion,
+<I>pthread_attr_setstackaddr()</I>
+and
+<I>pthread_attr_getstackaddr()</I>
+return a value of 0.
+Otherwise, an error number is returned to indicate the error.
+<P>
+
+The
+<I>pthread_attr_getstackaddr()</I>
+function stores the
+<I>stackaddr</I>
+attribute value in
+<I>stackaddr</I>
+if successful.
+<A NAME="lbHL">&nbsp;</A>
+<H2>ERRORS</H2>
+
+No errors are defined.
+<P>
+
+These functions will not return an error code of [EINTR].
+<A NAME="lbHM">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbHN">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbHO">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbHP">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setdetachstate()</I>,
+<I>pthread_attr_setstacksize()</I>,
+<I>pthread_create()</I>,
+<I>&lt;limits.h</I>&gt;,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbHQ">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbHR">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_attr_setstacksize,</B> <B>pthread_attr_getstacksize</B>
+- set and get stacksize attribute
+<A NAME="lbHS">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_attr_setstacksize</I>(pthread_attr_t *<I>attr</I>, size_t <I>stacksize</I>);
+int <I>pthread_attr_getstacksize</I>(const pthread_attr_t *<I>attr</I>,
+size_t *<I>stacksize</I>);
+<A NAME="lbHT">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The functions
+<I>pthread_attr_setstacksize()</I>
+and
+<I>pthread_attr_getstacksize()</I>,
+respectively, set and get the thread creation
+<I>stacksize</I>
+attribute in the
+<I>attr</I>
+object.
+<P>
+
+The
+<I>stacksize</I>
+attribute defines the minimum stack size (in bytes) allocated for
+the created threads stack.
+<A NAME="lbHU">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Upon successful completion,
+<I>pthread_attr_setstacksize()</I>
+and
+<I>pthread_attr_getstacksize()</I>
+return a value of 0.
+Otherwise, an error number is returned to indicate the error.
+The
+<I>pthread_attr_getstacksize()</I>
+function stores the
+<I>stacksize</I>
+attribute value in
+<I>stacksize</I>
+if successful.
+<A NAME="lbHV">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_attr_setstacksize()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of
+<I>stacksize</I>
+is less than <FONT SIZE="-1">PTHREAD_STACK_MIN</FONT> or exceeds a system-imposed limit.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbHW">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbHX">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbHY">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbHZ">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_attr_init()</I>,
+<I>pthread_attr_setstackaddr()</I>,
+<I>pthread_attr_setdetachstate()</I>,
+<I>pthread_create()</I>,
+<I>&lt;limits.h</I>&gt;,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbIA">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbIB">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_cancel</B> - cancel execution of a thread
+<A NAME="lbIC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_cancel</I>(pthread_t <I>thread</I>);
+<A NAME="lbID">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_cancel()</I>
+function requests that
+<I>thread</I>
+be canceled.
+The target threads cancelability state and type
+determines when the cancellation takes effect.
+When the cancellation is acted on, the
+cancellation cleanup handlers for
+<I>thread</I>
+are called.
+When the last cancellation cleanup handler returns,
+the thread-specific data destructor functions are called for
+<I>thread</I>.
+When the last destructor function returns,
+<I>thread</I>
+is terminated.
+<P>
+
+The cancellation processing in the target thread runs asynchronously
+with respect to the calling thread returning from
+<I>pthread_cancel()</I>.
+<A NAME="lbIE">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_cancel()</I>
+function returns zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbIF">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_cancel()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ESRCH</FONT>]<DD>
+
+No thread could be found corresponding to that specified
+by the given thread <FONT SIZE="-1">ID</FONT>.
+</DL>
+<P>
+
+The
+<I>pthread_cancel()</I>
+function will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbIG">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbIH">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbII">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbIJ">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_exit()</I>,
+<I>pthread_join()</I>,
+<I>pthread_setcancelstate()</I>,
+<I>pthread_cond_wait()</I>,
+<I>pthread_cond_timedwait()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbIK">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbIL">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_cleanup_push,</B> <B>pthread_cleanup_pop</B> - establish cancellation handlers
+<A NAME="lbIM">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+void <I>pthread_cleanup_push</I>(void (*<I>routine</I>)(void*), void *<I>arg</I>);
+void <I>pthread_cleanup_pop</I>(int <I>execute</I>);
+<A NAME="lbIN">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_cleanup_push()</I>
+function pushes the specified cancellation cleanup handler
+<I>routine</I>
+onto the calling thread's cancellation cleanup stack.
+The cancellation cleanup handler is popped from the
+cancellation cleanup stack and invoked with the argument
+<I>arg</I>
+when: (a) the thread exits (that is, calls
+<I>pthread_exit()</I>),
+(b) the thread acts upon a cancellation request, or
+(c) the thread calls
+<I>pthread_cleanup_pop()</I>
+with a non-zero
+<I>execute</I>
+argument.
+<P>
+
+The
+<I>pthread_cleanup_pop()</I>
+function removes the routine at the top of the calling thread's
+cancellation cleanup stack and optionally invokes it (if
+<I>execute</I>
+is non-zero).
+<P>
+
+These functions may be implemented as macros and will
+appear as statements and in pairs within the same lexical scope (that is, the
+<I>pthread_cleanup_push()</I>
+macro may be thought to expand to a token list whose first
+token is
+<B>`{'</B>
+with
+<I>pthread_cleanup_pop()</I>
+expanding to a token list whose last token is the corresponding
+<B>`}'</B>.
+<P>
+
+The effect of calling
+<I>longjmp()</I>
+or
+<I>siglongjmp()</I>
+is undefined if there have been any calls to
+<I>pthread_cleanup_push()</I>
+or
+<I>pthread_cleanup_pop()</I>
+made without the matching call
+since the jump buffer was filled.
+The effect of calling
+<I>longjmp()</I>
+or
+<I>siglongjmp()</I>
+from inside a cancellation cleanup handler is also
+undefined unless the jump buffer was also filled in the
+cancellation cleanup handler.
+<A NAME="lbIO">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+The
+<I>pthread_cleanup_push()</I>
+and
+<I>pthread_cleanup_pop()</I>
+functions return no value.
+<A NAME="lbIP">&nbsp;</A>
+<H2>ERRORS</H2>
+
+No errors are defined.
+<P>
+
+These functions will not return an error code of [EINTR].
+<A NAME="lbIQ">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbIR">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbIS">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbIT">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_cancel()</I>,
+<I>pthread_setcancelstate()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbIU">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbIV">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_cleanup_push,</B> <B>pthread_cleanup_pop</B> - establish cancellation handlers
+<A NAME="lbIW">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+void <I>pthread_cleanup_push</I>(void (*<I>routine</I>)(void*), void *<I>arg</I>);
+void <I>pthread_cleanup_pop</I>(int <I>execute</I>);
+<A NAME="lbIX">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_cleanup_push()</I>
+function pushes the specified cancellation cleanup handler
+<I>routine</I>
+onto the calling thread's cancellation cleanup stack.
+The cancellation cleanup handler is popped from the
+cancellation cleanup stack and invoked with the argument
+<I>arg</I>
+when: (a) the thread exits (that is, calls
+<I>pthread_exit()</I>),
+(b) the thread acts upon a cancellation request, or
+(c) the thread calls
+<I>pthread_cleanup_pop()</I>
+with a non-zero
+<I>execute</I>
+argument.
+<P>
+
+The
+<I>pthread_cleanup_pop()</I>
+function removes the routine at the top of the calling thread's
+cancellation cleanup stack and optionally invokes it (if
+<I>execute</I>
+is non-zero).
+<P>
+
+These functions may be implemented as macros and will
+appear as statements and in pairs within the same lexical scope (that is, the
+<I>pthread_cleanup_push()</I>
+macro may be thought to expand to a token list whose first
+token is
+<B>`{'</B>
+with
+<I>pthread_cleanup_pop()</I>
+expanding to a token list whose last token is the corresponding
+<B>`}'</B>.
+<P>
+
+The effect of calling
+<I>longjmp()</I>
+or
+<I>siglongjmp()</I>
+is undefined if there have been any calls to
+<I>pthread_cleanup_push()</I>
+or
+<I>pthread_cleanup_pop()</I>
+made without the matching call
+since the jump buffer was filled.
+The effect of calling
+<I>longjmp()</I>
+or
+<I>siglongjmp()</I>
+from inside a cancellation cleanup handler is also
+undefined unless the jump buffer was also filled in the
+cancellation cleanup handler.
+<A NAME="lbIY">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+The
+<I>pthread_cleanup_push()</I>
+and
+<I>pthread_cleanup_pop()</I>
+functions return no value.
+<A NAME="lbIZ">&nbsp;</A>
+<H2>ERRORS</H2>
+
+No errors are defined.
+<P>
+
+These functions will not return an error code of [EINTR].
+<A NAME="lbJA">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbJB">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbJC">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbJD">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_cancel()</I>,
+<I>pthread_setcancelstate()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbJE">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbJF">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_cond_signal,</B> <B>pthread_cond_broadcast</B> - signal or broadcast a
+condition
+<A NAME="lbJG">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_cond_signal</I>(pthread_cond_t *<I>cond</I>);
+int <I>pthread_cond_broadcast</I>(pthread_cond_t *<I>cond</I>);
+<A NAME="lbJH">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+These two functions are used to unblock
+threads blocked on a condition variable.
+<P>
+
+The
+<I>pthread_cond_signal()</I>
+call unblocks at least one of the threads that are blocked on the
+specified condition variable
+<I>cond</I>
+(if any threads are blocked on
+<I>cond</I>).
+<P>
+
+The
+<I>pthread_cond_broadcast()</I>
+call unblocks all threads currently blocked on the specified condition variable
+<I>cond</I>.
+<P>
+
+If more than one thread is blocked on a condition variable,
+the scheduling policy determines the order in which threads are unblocked.
+When each thread unblocked as a result of a
+<I>pthread_cond_signal()</I>
+or
+<I>pthread_cond_broadcast()</I>
+returns from its call to
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>,
+the thread owns the mutex with which it called
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>.
+The <I>thread</I>(s) that are unblocked contend for the mutex
+according to the scheduling policy (if applicable),
+and as if each had called
+<I>pthread_mutex_lock()</I>.
+<P>
+
+The
+<I>pthread_cond_signal()</I>
+or
+<I>pthread_cond_broadcast()</I>
+functions may be called by a thread whether or not it
+currently owns the mutex that threads calling
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+have associated with the condition variable during their waits;
+however, if predictable scheduling behaviour is required,
+then that mutex is locked by the thread calling
+<I>pthread_cond_signal()</I>
+or
+<I>pthread_cond_broadcast()</I>.
+<P>
+
+The
+<I>pthread_cond_signal()</I>
+and
+<I>pthread_cond_broadcast()</I>
+functions have no effect if there are no threads
+currently blocked on
+<I>cond</I>.
+<A NAME="lbJI">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_cond_signal()</I>
+and
+<I>pthread_cond_broadcast()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbJJ">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_cond_signal()</I>
+and
+<I>pthread_cond_broadcast()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value
+<I>cond</I>
+does not refer to an initialised condition variable.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbJK">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbJL">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbJM">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbJN">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_cond_init()</I>,
+<I>pthread_cond_wait()</I>,
+<I>pthread_cond_timedwait()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbJO">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbJP">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_cond_init,</B> <B>pthread_cond_destroy</B> - initialise and destroy
+condition variables
+<A NAME="lbJQ">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_cond_init</I>(pthread_cond_t *<I>cond</I>,
+const pthread_condattr_t *<I>attr</I>);
+int <I>pthread_cond_destroy</I>(pthread_cond_t *<I>cond</I>);
+pthread_cond_t <I>cond</I> = PTHREAD_COND_INITIALIZER;
+<A NAME="lbJR">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The function
+<I>pthread_cond_init()</I>
+initialises the condition variable referenced by
+<I>cond</I>
+with attributes referenced by
+<I>attr</I>.
+If
+<I>attr</I>
+is NULL,
+the default condition variable attributes are used;
+the effect is the same as passing the address
+of a default condition variable attributes object.
+Upon successful initialisation,
+the state of the condition variable becomes initialised.
+<P>
+
+Attempting to initialise an already initialised
+condition variable
+results in undefined behaviour.
+<P>
+
+The function
+<I>pthread_cond_destroy()</I>
+destroys the given condition variable specified by
+<I>cond</I>;
+the object becomes, in effect, uninitialised.
+An implementation may cause
+<I>pthread_cond_destroy()</I>
+to set the object referenced by
+<I>cond</I>
+to an invalid value.
+A destroyed condition variable object
+can be re-initialised using
+<I>pthread_cond_init()</I>;
+the results of otherwise referencing the object after it has been destroyed
+are undefined.
+<P>
+
+It is safe to destroy an initialised condition variable
+upon which no threads are currently blocked.
+Attempting to destroy a condition variable
+upon which other threads are currently blocked
+results in undefined behaviour.
+<P>
+
+In cases where default condition variable attributes are appropriate,
+the macro PTHREAD_COND_INITIALIZER
+can be used to initialise condition variables that are statically allocated.
+The effect is equivalent to dynamic initialisation by a call to
+<I>pthread_cond_init()</I>
+with parameter
+<I>attr</I>
+specified as NULL, except that no error checks are performed.
+<A NAME="lbJS">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_cond_init()</I>
+and
+<I>pthread_cond_destroy()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+The [EBUSY] and [EINVAL]
+error checks, if implemented,
+act as if they were performed immediately
+at the beginning of processing for the function
+and caused an error return
+prior to modifying the state of the condition variable specified by
+<I>cond</I>.
+<A NAME="lbJT">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_cond_init()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EAGAIN</FONT>]<DD>
+
+The system lacked the necessary resources (other
+than memory) to initialise another condition variable.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOMEM</FONT>]<DD>
+
+Insufficient memory exists to initialise the condition variable.
+</DL>
+<P>
+
+The
+<I>pthread_cond_init()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EBUSY</FONT>]<DD>
+
+The implementation has detected an attempt
+to re-initialise the object referenced by
+<I>cond</I>,
+a previously initialised, but
+not yet destroyed, condition variable.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>attr</I>
+is invalid.
+</DL>
+<P>
+
+The
+<I>pthread_cond_destroy()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EBUSY</FONT>]<DD>
+
+The implementation has detected an attempt to destroy
+the object referenced by
+<I>cond</I>
+while it is referenced
+(for example, while being used in a
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>)
+by another thread.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>cond</I>
+is invalid.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbJU">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbJV">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbJW">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbJX">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_cond_signal()</I>,
+<I>pthread_cond_broadcast()</I>,
+<I>pthread_cond_wait()</I>,
+<I>pthread_cond_timedwait()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbJY">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbJZ">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_cond_init,</B> <B>pthread_cond_destroy</B> - initialise and destroy
+condition variables
+<A NAME="lbKA">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_cond_init</I>(pthread_cond_t *<I>cond</I>,
+const pthread_condattr_t *<I>attr</I>);
+int <I>pthread_cond_destroy</I>(pthread_cond_t *<I>cond</I>);
+pthread_cond_t <I>cond</I> = PTHREAD_COND_INITIALIZER;
+<A NAME="lbKB">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The function
+<I>pthread_cond_init()</I>
+initialises the condition variable referenced by
+<I>cond</I>
+with attributes referenced by
+<I>attr</I>.
+If
+<I>attr</I>
+is NULL,
+the default condition variable attributes are used;
+the effect is the same as passing the address
+of a default condition variable attributes object.
+Upon successful initialisation,
+the state of the condition variable becomes initialised.
+<P>
+
+Attempting to initialise an already initialised
+condition variable
+results in undefined behaviour.
+<P>
+
+The function
+<I>pthread_cond_destroy()</I>
+destroys the given condition variable specified by
+<I>cond</I>;
+the object becomes, in effect, uninitialised.
+An implementation may cause
+<I>pthread_cond_destroy()</I>
+to set the object referenced by
+<I>cond</I>
+to an invalid value.
+A destroyed condition variable object
+can be re-initialised using
+<I>pthread_cond_init()</I>;
+the results of otherwise referencing the object after it has been destroyed
+are undefined.
+<P>
+
+It is safe to destroy an initialised condition variable
+upon which no threads are currently blocked.
+Attempting to destroy a condition variable
+upon which other threads are currently blocked
+results in undefined behaviour.
+<P>
+
+In cases where default condition variable attributes are appropriate,
+the macro PTHREAD_COND_INITIALIZER
+can be used to initialise condition variables that are statically allocated.
+The effect is equivalent to dynamic initialisation by a call to
+<I>pthread_cond_init()</I>
+with parameter
+<I>attr</I>
+specified as NULL, except that no error checks are performed.
+<A NAME="lbKC">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_cond_init()</I>
+and
+<I>pthread_cond_destroy()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+The [EBUSY] and [EINVAL]
+error checks, if implemented,
+act as if they were performed immediately
+at the beginning of processing for the function
+and caused an error return
+prior to modifying the state of the condition variable specified by
+<I>cond</I>.
+<A NAME="lbKD">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_cond_init()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EAGAIN</FONT>]<DD>
+
+The system lacked the necessary resources (other
+than memory) to initialise another condition variable.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOMEM</FONT>]<DD>
+
+Insufficient memory exists to initialise the condition variable.
+</DL>
+<P>
+
+The
+<I>pthread_cond_init()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EBUSY</FONT>]<DD>
+
+The implementation has detected an attempt
+to re-initialise the object referenced by
+<I>cond</I>,
+a previously initialised, but
+not yet destroyed, condition variable.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>attr</I>
+is invalid.
+</DL>
+<P>
+
+The
+<I>pthread_cond_destroy()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EBUSY</FONT>]<DD>
+
+The implementation has detected an attempt to destroy
+the object referenced by
+<I>cond</I>
+while it is referenced
+(for example, while being used in a
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>)
+by another thread.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>cond</I>
+is invalid.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbKE">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbKF">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbKG">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbKH">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_cond_signal()</I>,
+<I>pthread_cond_broadcast()</I>,
+<I>pthread_cond_wait()</I>,
+<I>pthread_cond_timedwait()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbKI">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbKJ">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_cond_signal,</B> <B>pthread_cond_broadcast</B> - signal or broadcast a
+condition
+<A NAME="lbKK">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_cond_signal</I>(pthread_cond_t *<I>cond</I>);
+int <I>pthread_cond_broadcast</I>(pthread_cond_t *<I>cond</I>);
+<A NAME="lbKL">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+These two functions are used to unblock
+threads blocked on a condition variable.
+<P>
+
+The
+<I>pthread_cond_signal()</I>
+call unblocks at least one of the threads that are blocked on the
+specified condition variable
+<I>cond</I>
+(if any threads are blocked on
+<I>cond</I>).
+<P>
+
+The
+<I>pthread_cond_broadcast()</I>
+call unblocks all threads currently blocked on the specified condition variable
+<I>cond</I>.
+<P>
+
+If more than one thread is blocked on a condition variable,
+the scheduling policy determines the order in which threads are unblocked.
+When each thread unblocked as a result of a
+<I>pthread_cond_signal()</I>
+or
+<I>pthread_cond_broadcast()</I>
+returns from its call to
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>,
+the thread owns the mutex with which it called
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>.
+The <I>thread</I>(s) that are unblocked contend for the mutex
+according to the scheduling policy (if applicable),
+and as if each had called
+<I>pthread_mutex_lock()</I>.
+<P>
+
+The
+<I>pthread_cond_signal()</I>
+or
+<I>pthread_cond_broadcast()</I>
+functions may be called by a thread whether or not it
+currently owns the mutex that threads calling
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+have associated with the condition variable during their waits;
+however, if predictable scheduling behaviour is required,
+then that mutex is locked by the thread calling
+<I>pthread_cond_signal()</I>
+or
+<I>pthread_cond_broadcast()</I>.
+<P>
+
+The
+<I>pthread_cond_signal()</I>
+and
+<I>pthread_cond_broadcast()</I>
+functions have no effect if there are no threads
+currently blocked on
+<I>cond</I>.
+<A NAME="lbKM">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_cond_signal()</I>
+and
+<I>pthread_cond_broadcast()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbKN">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_cond_signal()</I>
+and
+<I>pthread_cond_broadcast()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value
+<I>cond</I>
+does not refer to an initialised condition variable.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbKO">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbKP">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbKQ">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbKR">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_cond_init()</I>,
+<I>pthread_cond_wait()</I>,
+<I>pthread_cond_timedwait()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbKS">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbKT">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_cond_wait,</B> <B>pthread_cond_timedwait</B> - wait on a condition
+<A NAME="lbKU">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_cond_wait</I>(pthread_cond_t *<I>cond</I>, pthread_mutex_t *<I>mutex</I>);
+int <I>pthread_cond_timedwait</I>(pthread_cond_t *<I>cond</I>,
+pthread_mutex_t *<I>mutex</I>, const struct timespec *<I>abstime</I>);
+<A NAME="lbKV">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_cond_wait()</I>
+and
+<I>pthread_cond_timedwait()</I>
+functions are used to block on a condition variable.
+They are called with
+<I>mutex</I>
+locked by the calling thread or undefined behaviour will result.
+<P>
+
+These functions atomically release
+<I>mutex</I>
+and cause the calling thread to block on the condition variable
+<I>cond</I>;
+atomically here means &amp;quot;atomically with respect to access by another
+thread to the mutex and then the condition variable&amp;quot;.
+That is, if another thread is able to acquire the mutex
+after the about-to-block thread has released it,
+then a subsequent call to
+<I>pthread_cond_signal()</I>
+or
+<I>pthread_cond_broadcast()</I>
+in that thread behaves as if it were issued
+after the about-to-block thread has blocked.
+<P>
+
+Upon successful return, the mutex has been
+locked and is owned by the calling thread.
+<P>
+
+When using condition variables there is always a boolean predicate involving
+shared variables associated with each condition wait that is true if the thread
+should proceed.
+Spurious wakeups from the
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+functions may occur.
+Since the return from
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+does not imply anything about the value of this predicate,
+the predicate should be re-evaluated upon such return.
+<P>
+
+The effect of using more than one mutex for concurrent
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+operations on the same condition variable is
+undefined; that is, a condition variable becomes bound to a unique mutex
+when a thread
+waits on the condition variable,
+and this (dynamic) binding ends when the wait returns.
+<P>
+
+A condition wait (whether timed or not) is a cancellation point.
+When the cancelability enable state of a thread is set to
+PTHREAD_CANCEL_DEFERRED,
+a side effect of acting upon a cancellation request
+while in a condition wait is that the mutex is (in effect) re-acquired
+before calling the first cancellation cleanup handler.
+The effect is as if the thread were unblocked,
+allowed to execute up to the point of returning from the
+call to
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>,
+but at that point
+notices the cancellation request and instead of returning to the caller
+of
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>,
+starts the thread cancellation activities, which includes calling
+cancellation cleanup handlers.
+<P>
+
+A thread that has been unblocked because it has been
+canceled while blocked in a call to
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+does not consume any condition signal that may be
+directed concurrently at the
+condition variable if there are other threads blocked on
+the condition variable.
+<P>
+
+The
+<I>pthread_cond_timedwait()</I>
+function is the same as
+<I>pthread_cond_wait()</I>
+except that
+an error is returned
+if the absolute time specified by
+<I>abstime</I>
+passes (that is, system time equals or exceeds
+<I>abstime</I>)
+before the condition
+<I>cond</I>
+is signaled or broadcasted,
+or if the absolute time specified by
+<I>abstime</I>
+has already been passed at the time of the call.
+When such time-outs occur,
+<I>pthread_cond_timedwait()</I>
+will nonetheless release
+and reacquire the mutex referenced by
+<I>mutex</I>.
+The function
+<I>pthread_cond_timedwait()</I>
+is also a cancellation point.
+<P>
+
+If a signal is delivered to a thread waiting for a condition variable,
+upon return from the signal handler
+the thread resumes waiting for the condition variable
+as if it was not interrupted,
+or it returns zero due to spurious wakeup.
+<A NAME="lbKW">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Except in the case of [ETIMEDOUT],
+all these error checks act as if they were performed immediately
+at the beginning of processing for the function
+and cause an error return,
+in effect, prior to modifying the state of the mutex specified by
+<I>mutex</I>
+or the condition variable specified by
+<I>cond</I>.
+<P>
+
+Upon successful completion, a value of zero is returned.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbKX">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_cond_timedwait()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ETIMEDOUT</FONT>]<DD>
+
+The time specified by
+<I>abstime</I>
+to
+<I>pthread_cond_timedwait()</I>
+has passed.
+</DL>
+<P>
+
+The
+<I>pthread_cond_wait()</I>
+and
+<I>pthread_cond_timedwait()</I>
+functions may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>cond</I>,
+<I>mutex</I>,
+or
+<I>abstime</I>
+is invalid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+Different mutexes were supplied for concurrent
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+operations on the same condition variable.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The mutex was not owned by the current thread at the time of the call.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbKY">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbKZ">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbLA">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbLB">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_cond_signal()</I>,
+<I>pthread_cond_broadcast()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbLC">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbLD">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_cond_wait,</B> <B>pthread_cond_timedwait</B> - wait on a condition
+<A NAME="lbLE">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_cond_wait</I>(pthread_cond_t *<I>cond</I>, pthread_mutex_t *<I>mutex</I>);
+int <I>pthread_cond_timedwait</I>(pthread_cond_t *<I>cond</I>,
+pthread_mutex_t *<I>mutex</I>, const struct timespec *<I>abstime</I>);
+<A NAME="lbLF">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_cond_wait()</I>
+and
+<I>pthread_cond_timedwait()</I>
+functions are used to block on a condition variable.
+They are called with
+<I>mutex</I>
+locked by the calling thread or undefined behaviour will result.
+<P>
+
+These functions atomically release
+<I>mutex</I>
+and cause the calling thread to block on the condition variable
+<I>cond</I>;
+atomically here means &amp;quot;atomically with respect to access by another
+thread to the mutex and then the condition variable&amp;quot;.
+That is, if another thread is able to acquire the mutex
+after the about-to-block thread has released it,
+then a subsequent call to
+<I>pthread_cond_signal()</I>
+or
+<I>pthread_cond_broadcast()</I>
+in that thread behaves as if it were issued
+after the about-to-block thread has blocked.
+<P>
+
+Upon successful return, the mutex has been
+locked and is owned by the calling thread.
+<P>
+
+When using condition variables there is always a boolean predicate involving
+shared variables associated with each condition wait that is true if the thread
+should proceed.
+Spurious wakeups from the
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+functions may occur.
+Since the return from
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+does not imply anything about the value of this predicate,
+the predicate should be re-evaluated upon such return.
+<P>
+
+The effect of using more than one mutex for concurrent
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+operations on the same condition variable is
+undefined; that is, a condition variable becomes bound to a unique mutex
+when a thread
+waits on the condition variable,
+and this (dynamic) binding ends when the wait returns.
+<P>
+
+A condition wait (whether timed or not) is a cancellation point.
+When the cancelability enable state of a thread is set to
+PTHREAD_CANCEL_DEFERRED,
+a side effect of acting upon a cancellation request
+while in a condition wait is that the mutex is (in effect) re-acquired
+before calling the first cancellation cleanup handler.
+The effect is as if the thread were unblocked,
+allowed to execute up to the point of returning from the
+call to
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>,
+but at that point
+notices the cancellation request and instead of returning to the caller
+of
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>,
+starts the thread cancellation activities, which includes calling
+cancellation cleanup handlers.
+<P>
+
+A thread that has been unblocked because it has been
+canceled while blocked in a call to
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+does not consume any condition signal that may be
+directed concurrently at the
+condition variable if there are other threads blocked on
+the condition variable.
+<P>
+
+The
+<I>pthread_cond_timedwait()</I>
+function is the same as
+<I>pthread_cond_wait()</I>
+except that
+an error is returned
+if the absolute time specified by
+<I>abstime</I>
+passes (that is, system time equals or exceeds
+<I>abstime</I>)
+before the condition
+<I>cond</I>
+is signaled or broadcasted,
+or if the absolute time specified by
+<I>abstime</I>
+has already been passed at the time of the call.
+When such time-outs occur,
+<I>pthread_cond_timedwait()</I>
+will nonetheless release
+and reacquire the mutex referenced by
+<I>mutex</I>.
+The function
+<I>pthread_cond_timedwait()</I>
+is also a cancellation point.
+<P>
+
+If a signal is delivered to a thread waiting for a condition variable,
+upon return from the signal handler
+the thread resumes waiting for the condition variable
+as if it was not interrupted,
+or it returns zero due to spurious wakeup.
+<A NAME="lbLG">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Except in the case of [ETIMEDOUT],
+all these error checks act as if they were performed immediately
+at the beginning of processing for the function
+and cause an error return,
+in effect, prior to modifying the state of the mutex specified by
+<I>mutex</I>
+or the condition variable specified by
+<I>cond</I>.
+<P>
+
+Upon successful completion, a value of zero is returned.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbLH">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_cond_timedwait()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ETIMEDOUT</FONT>]<DD>
+
+The time specified by
+<I>abstime</I>
+to
+<I>pthread_cond_timedwait()</I>
+has passed.
+</DL>
+<P>
+
+The
+<I>pthread_cond_wait()</I>
+and
+<I>pthread_cond_timedwait()</I>
+functions may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>cond</I>,
+<I>mutex</I>,
+or
+<I>abstime</I>
+is invalid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+Different mutexes were supplied for concurrent
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>
+operations on the same condition variable.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The mutex was not owned by the current thread at the time of the call.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbLI">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbLJ">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbLK">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbLL">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_cond_signal()</I>,
+<I>pthread_cond_broadcast()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbLM">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbLN">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_condattr_init,</B> <B>pthread_condattr_destroy</B>
+- initialise and destroy condition variable attributes object
+<A NAME="lbLO">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_condattr_init</I>(pthread_condattr_t *<I>attr</I>);
+int <I>pthread_condattr_destroy</I>(pthread_condattr_t *<I>attr</I>);
+<A NAME="lbLP">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The function
+<I>pthread_condattr_init()</I>
+initialises a condition variable attributes object
+<I>attr</I>
+with the default value for all of the attributes
+defined by the implementation.
+<P>
+
+Attempting to initialise an already initialised
+condition variable attributes object
+results in undefined behaviour.
+<P>
+
+After a condition variable
+attributes object has been used to initialise one or more
+condition variables, any function affecting the attributes object (including
+destruction) does not affect any previously initialised condition variables.
+<P>
+
+The
+<I>pthread_condattr_destroy()</I>
+function destroys a condition variable attributes object;
+the object becomes, in effect, uninitialised.
+An implementation may cause
+<I>pthread_condattr_destroy()</I>
+to set the object referenced by
+<I>attr</I>
+to an invalid value.
+A destroyed condition variable attributes object
+can be re-initialised using
+<I>pthread_condattr_init()</I>;
+the results of otherwise referencing the object after it has been destroyed
+are undefined.
+<P>
+
+Additional attributes, their default values, and the names
+of the associated functions to get and set those attribute values are
+implementation-dependent.
+<A NAME="lbLQ">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_condattr_init()</I>
+and
+<I>pthread_condattr_destroy()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbLR">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_condattr_init()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOMEM</FONT>]<DD>
+
+Insufficient memory exists to initialise the condition variable
+attributes object.
+</DL>
+<P>
+
+The
+<I>pthread_condattr_destroy()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>attr</I>
+is invalid.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbLS">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbLT">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbLU">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbLV">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_condattr_getpshared()</I>,
+<I>pthread_create()</I>,
+<I>pthread_mutex_init()</I>,
+<I>pthread_cond_init()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbLW">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbLX">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_condattr_getpshared,</B> <B>pthread_condattr_setpshared</B>
+- get and set the process-shared condition variable attributes
+<A NAME="lbLY">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_condattr_getpshared</I>(const pthread_condattr_t *<I>attr</I>,
+int *<I>pshared</I>);
+int <I>pthread_condattr_setpshared</I>(pthread_condattr_t *<I>attr</I>,
+int <I>pshared</I>);
+<A NAME="lbLZ">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_condattr_getpshared()</I>
+function obtains the value of the
+<I>process-shared</I>
+attribute from the attributes object referenced by
+<I>attr</I>.
+The
+<I>pthread_condattr_setpshared()</I>
+function is used to set the
+<I>process-shared</I>
+attribute in an initialised attributes object referenced by
+<I>attr</I>.
+<P>
+
+The
+<I>process-shared</I>
+attribute is set to PTHREAD_PROCESS_SHARED
+to permit a condition variable
+to be operated upon by any thread that has access to the memory
+where the condition variable
+is allocated, even if the condition variable
+is allocated in memory that is shared by multiple processes.
+If the
+<I>process-shared</I>
+attribute is PTHREAD_PROCESS_PRIVATE, the condition variable
+will only be operated upon by threads created
+within the same process as the
+thread that initialised the condition variable;
+if threads of differing processes
+attempt to operate on such a condition variable, the behaviour is
+undefined.  The default value of the attribute is
+PTHREAD_PROCESS_PRIVATE.
+<P>
+
+Additional attributes, their default values, and the names
+of the associated functions to get and set those attribute values are
+implementation-dependent.
+<A NAME="lbMA">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_condattr_setpshared()</I>
+function returns zero.
+Otherwise, an error number is returned to indicate the error.
+<P>
+
+If successful, the
+<I>pthread_condattr_getpshared()</I>
+function returns zero
+and stores the value of the
+<I>process-shared</I>
+attribute of
+<I>attr</I>
+into the object referenced by the
+<I>pshared</I>
+parameter.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbMB">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_condattr_getpshared()</I>
+and
+<I>pthread_condattr_setpshared()</I>
+functions may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>attr</I>
+is invalid.
+</DL>
+<P>
+
+The
+<I>pthread_condattr_setpshared()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The new value specified for the attribute
+is outside the range of legal values for that attribute.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbMC">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbMD">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbME">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbMF">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_condattr_init()</I>,
+<I>pthread_create()</I>,
+<I>pthread_mutex_init()</I>,
+<I>pthread_cond_init()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbMG">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbMH">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_condattr_init,</B> <B>pthread_condattr_destroy</B>
+- initialise and destroy condition variable attributes object
+<A NAME="lbMI">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_condattr_init</I>(pthread_condattr_t *<I>attr</I>);
+int <I>pthread_condattr_destroy</I>(pthread_condattr_t *<I>attr</I>);
+<A NAME="lbMJ">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The function
+<I>pthread_condattr_init()</I>
+initialises a condition variable attributes object
+<I>attr</I>
+with the default value for all of the attributes
+defined by the implementation.
+<P>
+
+Attempting to initialise an already initialised
+condition variable attributes object
+results in undefined behaviour.
+<P>
+
+After a condition variable
+attributes object has been used to initialise one or more
+condition variables, any function affecting the attributes object (including
+destruction) does not affect any previously initialised condition variables.
+<P>
+
+The
+<I>pthread_condattr_destroy()</I>
+function destroys a condition variable attributes object;
+the object becomes, in effect, uninitialised.
+An implementation may cause
+<I>pthread_condattr_destroy()</I>
+to set the object referenced by
+<I>attr</I>
+to an invalid value.
+A destroyed condition variable attributes object
+can be re-initialised using
+<I>pthread_condattr_init()</I>;
+the results of otherwise referencing the object after it has been destroyed
+are undefined.
+<P>
+
+Additional attributes, their default values, and the names
+of the associated functions to get and set those attribute values are
+implementation-dependent.
+<A NAME="lbMK">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_condattr_init()</I>
+and
+<I>pthread_condattr_destroy()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbML">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_condattr_init()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOMEM</FONT>]<DD>
+
+Insufficient memory exists to initialise the condition variable
+attributes object.
+</DL>
+<P>
+
+The
+<I>pthread_condattr_destroy()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>attr</I>
+is invalid.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbMM">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbMN">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbMO">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbMP">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_condattr_getpshared()</I>,
+<I>pthread_create()</I>,
+<I>pthread_mutex_init()</I>,
+<I>pthread_cond_init()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbMQ">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbMR">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_condattr_getpshared,</B> <B>pthread_condattr_setpshared</B>
+- get and set the process-shared condition variable attributes
+<A NAME="lbMS">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_condattr_getpshared</I>(const pthread_condattr_t *<I>attr</I>,
+int *<I>pshared</I>);
+int <I>pthread_condattr_setpshared</I>(pthread_condattr_t *<I>attr</I>,
+int <I>pshared</I>);
+<A NAME="lbMT">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_condattr_getpshared()</I>
+function obtains the value of the
+<I>process-shared</I>
+attribute from the attributes object referenced by
+<I>attr</I>.
+The
+<I>pthread_condattr_setpshared()</I>
+function is used to set the
+<I>process-shared</I>
+attribute in an initialised attributes object referenced by
+<I>attr</I>.
+<P>
+
+The
+<I>process-shared</I>
+attribute is set to PTHREAD_PROCESS_SHARED
+to permit a condition variable
+to be operated upon by any thread that has access to the memory
+where the condition variable
+is allocated, even if the condition variable
+is allocated in memory that is shared by multiple processes.
+If the
+<I>process-shared</I>
+attribute is PTHREAD_PROCESS_PRIVATE, the condition variable
+will only be operated upon by threads created
+within the same process as the
+thread that initialised the condition variable;
+if threads of differing processes
+attempt to operate on such a condition variable, the behaviour is
+undefined.  The default value of the attribute is
+PTHREAD_PROCESS_PRIVATE.
+<P>
+
+Additional attributes, their default values, and the names
+of the associated functions to get and set those attribute values are
+implementation-dependent.
+<A NAME="lbMU">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_condattr_setpshared()</I>
+function returns zero.
+Otherwise, an error number is returned to indicate the error.
+<P>
+
+If successful, the
+<I>pthread_condattr_getpshared()</I>
+function returns zero
+and stores the value of the
+<I>process-shared</I>
+attribute of
+<I>attr</I>
+into the object referenced by the
+<I>pshared</I>
+parameter.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbMV">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_condattr_getpshared()</I>
+and
+<I>pthread_condattr_setpshared()</I>
+functions may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>attr</I>
+is invalid.
+</DL>
+<P>
+
+The
+<I>pthread_condattr_setpshared()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The new value specified for the attribute
+is outside the range of legal values for that attribute.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbMW">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbMX">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbMY">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbMZ">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_condattr_init()</I>,
+<I>pthread_create()</I>,
+<I>pthread_mutex_init()</I>,
+<I>pthread_cond_init()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbNA">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbNB">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_create</B> - thread creation
+<A NAME="lbNC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_create</I>(pthread_t *<I>thread</I>, const pthread_attr_t *<I>attr</I>,
+void *(*<I>start_routine</I>)(void*), void *<I>arg</I>);
+<A NAME="lbND">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_create()</I>
+function is used to create a new thread, with attributes specified by
+<I>attr</I>,
+within a process.
+If
+<I>attr</I>
+is NULL,
+the default attributes are used.
+If the attributes specified by
+<I>attr</I>
+are modified later, the thread's attributes are not affected.
+Upon successful completion,
+<I>pthread_create()</I>
+stores the ID of the created thread in the location referenced by
+<I>thread</I>.
+<P>
+
+The thread is created executing
+<I>start_routine</I>
+with
+<I>arg</I>
+as its sole argument.
+If the
+<I>start_routine</I>
+returns, the effect is as if there was an implicit call to
+<I>pthread_exit()</I>
+using the return value of
+<I>start_routine</I>
+as the exit status.
+Note that the thread in which
+<I>main()</I>
+was originally invoked differs from this.
+When it returns from
+<I>main()</I>,
+the effect is as if there was an implicit call to
+<I>exit()</I>
+using the return value of
+<I>main()</I>
+as the exit status.
+<P>
+
+The signal state of the new thread is initialised as follows:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>o<DD>
+
+The signal mask is inherited from the creating thread.
+
+<BR>
+
+
+
+
+<DT>o<DD>
+
+The set of signals pending for the new thread is empty.
+</DL>
+<P>
+
+If
+<I>pthread_create()</I>
+fails, no new thread is created
+and the contents of the location referenced by
+<I>thread</I>
+are undefined.
+<A NAME="lbNE">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_create()</I>
+function returns zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbNF">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_create()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EAGAIN</FONT>]<DD>
+
+The system lacked the necessary resources to create another thread,
+or the system-imposed limit on the total number of threads
+in a process <FONT SIZE="-1">PTHREAD_THREADS_MAX</FONT> would be exceeded.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>attr</I>
+is invalid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EPERM</FONT>]<DD>
+
+The caller does not have appropriate permission to set the required
+scheduling parameters or scheduling policy.
+</DL>
+<P>
+
+The
+<I>pthread_create()</I>
+function will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbNG">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbNH">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbNI">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbNJ">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_exit()</I>,
+<I>pthread_join()</I>,
+<I>fork()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbNK">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbNL">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_detach</B> - detach a thread
+<A NAME="lbNM">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_detach</I>(pthread_t <I>thread</I>);
+<A NAME="lbNN">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_detach()</I>
+function is used to indicate to the implementation that storage
+for the thread
+<I>thread</I>
+can be reclaimed when that thread terminates.
+If
+<I>thread</I>
+has not terminated,
+<I>pthread_detach()</I>
+will not cause it to terminate.
+The effect of multiple
+<I>pthread_detach()</I>
+calls on the same target thread is unspecified.
+<A NAME="lbNO">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If the call succeeds,
+<I>pthread_detach()</I>
+returns 0.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbNP">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_detach()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The implementation has detected that the value specified by
+<I>thread</I>
+does not refer to a joinable thread.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ESRCH</FONT>]<DD>
+
+No thread could be found corresponding to that specified
+by the given thread <FONT SIZE="-1">ID</FONT>.
+</DL>
+<P>
+
+The
+<I>pthread_detach()</I>
+function will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbNQ">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbNR">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbNS">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbNT">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_join()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbNU">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbNV">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_equal</B> - compare thread IDs
+<A NAME="lbNW">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_equal</I>(pthread_t <I>t1</I>, pthread_t <I>t2</I>);
+<A NAME="lbNX">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+This function compares the thread IDs
+<I>t1</I>
+and
+<I>t2</I>.
+<A NAME="lbNY">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+The
+<I>pthread_equal()</I>
+function returns a non-zero value if
+<I>t1</I>
+and
+<I>t2</I>
+are equal;
+otherwise, zero is returned.
+<P>
+
+If either
+<I>t1</I>
+or
+<I>t2</I>
+are not valid thread IDs, the behaviour is undefined.
+<A NAME="lbNZ">&nbsp;</A>
+<H2>ERRORS</H2>
+
+No errors are defined.
+<P>
+
+The
+<I>pthread_equal()</I>
+function will not return an error code of [EINTR].
+<A NAME="lbOA">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbOB">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbOC">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbOD">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_create()</I>,
+<I>pthread_self()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbOE">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbOF">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_exit</B> - thread termination
+<A NAME="lbOG">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+void <I>pthread_exit</I>(void *<I>value_ptr</I>);
+<A NAME="lbOH">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_exit()</I>
+function terminates the calling thread and makes the value
+<I>value_ptr</I>
+available to any successful join with the terminating thread.
+Any cancellation cleanup handlers
+that have been pushed and not yet popped are popped in the reverse order
+that they were pushed and then executed.
+After all cancellation cleanup handlers have been executed,
+if the thread has any thread-specific data,
+appropriate destructor functions will be called in an unspecified order.
+Thread termination does not release any application visible process resources,
+including, but not limited to, mutexes and file descriptors,
+nor does it perform any process level cleanup actions,
+including, but not limited to, calling any
+<I>atexit()</I>
+routines that may exist.
+<P>
+
+An implicit call to
+<I>pthread_exit()</I>
+is made when a thread other than the thread in which
+<I>main()</I>
+was first invoked returns from the start routine
+that was used to create it.
+The function's return value serves as the thread's exit status.
+<P>
+
+The behaviour of
+<I>pthread_exit()</I>
+is undefined if called from a
+cancellation cleanup handler
+or destructor function
+that was invoked as a result of either an implicit or
+explicit call to
+<I>pthread_exit()</I>.
+<P>
+
+After a thread has terminated,
+the result of access to local (auto) variables of the thread is undefined.
+Thus, references to local variables of the exiting thread
+should not be used for the
+<I>pthread_exit()</I>
+<I>value_ptr</I>
+parameter value.
+<P>
+
+The process exits with an exit status of 0 after the
+last thread has been terminated.
+The behaviour is as if the implementation called
+<I>exit()</I>
+with a zero argument at thread termination time.
+<A NAME="lbOI">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+The
+<I>pthread_exit()</I>
+function cannot return to its caller.
+<A NAME="lbOJ">&nbsp;</A>
+<H2>ERRORS</H2>
+
+No errors are defined.
+<P>
+
+The
+<I>pthread_exit()</I>
+function will not return an error code of [EINTR].
+<A NAME="lbOK">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbOL">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbOM">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbON">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_create()</I>,
+<I>pthread_join()</I>,
+<I>exit()</I>,
+<I>_exit()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbOO">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbOP">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_getconcurrency,</B> <B>pthread_setconcurrency</B> -
+get or set level of concurrency
+<A NAME="lbOQ">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_getconcurrency</I>(void);
+int <I>pthread_setconcurrency</I>(int <I>new_level</I>);
+<A NAME="lbOR">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+Unbound threads in a process may or may not be required to be
+simultaneously active. By default, the threads
+implementation ensures that a sufficient number of threads are active
+so that the process can continue to make
+progress. While this conserves system resources, it may not produce
+the most effective level of concurrency.
+<P>
+
+The
+<I>pthread_setconcurrency()</I>
+function allows an application to inform
+the threads implementation of its desired concurrency level,
+<I>new_level</I>.
+The actual level of concurrency provided by the implementation as a
+result of this function call is unspecified.
+<P>
+
+If <I>new_level</I> is zero, it causes the implementation to maintain
+the concurrency level at its discretion as if
+<I>pthread_setconcurrency()</I>
+was never called.
+<P>
+
+The
+<I>pthread_getconcurrency()</I>
+function returns the
+value set by a previous call to the
+<I>pthread_setconcurrency()</I>
+function.  If the
+<I>pthread_setconcurrency()</I>
+function was not previously called,
+this function returns zero to indicate that the implementation
+is maintaining the concurrency level.
+<P>
+
+When an application calls
+<I>pthread_setconcurrency()</I>
+it is
+informing the implementation of its desired
+concurrency level. The implementation uses this as a hint,
+not a requirement.
+<P>
+
+If an implementation does not support multiplexing of user threads
+on top of several kernel scheduled entities,
+the
+<I>pthread_setconcurrency()</I>
+and
+<I>pthread_getconcurrency()</I>
+functions
+will be provided for source code
+compatibility but they will have no effect when called. To maintain
+the function semantics, the <I>new_level</I>
+parameter will be saved when
+<I>pthread_setconcurrency()</I>
+is called so
+that a subsequent call to
+<I>pthread_getconcurrency()</I>
+returns the same value.
+<A NAME="lbOS">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_setconcurrency()</I>
+function returns zero.  Otherwise, an error number is returned
+to indicate the error.
+<P>
+
+The
+<I>pthread_getconcurrency()</I>
+function always returns the concurrency level set by a previous call to
+<I>pthread_setconcurrency()</I>.
+If the
+<I>pthread_setconcurrency()</I>
+function has never been called,
+<I>pthread_getconcurrency()</I>
+returns zero.
+<A NAME="lbOT">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_setconcurrency()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by <I>new_level</I> is negative.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EAGAIN</FONT>]<DD>
+
+The value specific by <I>new_level</I> would cause a system resource
+to be exceeded.
+</DL>
+<A NAME="lbOU">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbOV">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+Use of these functions changes the state of the underlying
+concurrency upon which the application depends. Library
+developers are advised to not use the
+<I>pthread_getconcurrency()</I>
+and
+<I>pthread_setconcurrency()</I>
+functions since their
+use may conflict with an applications use of these functions.
+<A NAME="lbOW">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbOX">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbOY">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbOZ">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_getschedparam,</B> <B>pthread_setschedparam</B>
+- dynamic thread scheduling parameters access
+(<B>REALTIME THREADS</B>)
+<A NAME="lbPA">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_getschedparam</I>(pthread_t <I>thread</I>, int *<I>policy</I>,
+struct sched_param *<I>param</I>);
+int <I>pthread_setschedparam</I>(pthread_t <I>thread</I>, int <I>policy</I>,
+const struct sched_param *<I>param</I>);
+<A NAME="lbPB">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_getschedparam()</I>
+and
+<I>pthread_setschedparam()</I>
+allow the scheduling policy and scheduling parameters of individual threads
+within a multi-threaded process to be retrieved and set.
+For SCHED_FIFO and SCHED_RR,
+the only required member of the
+<B>sched_param</B>
+structure is the priority
+<I>sched_priority</I>.
+For SCHED_OTHER,
+the affected scheduling parameters are implementation-dependent.
+<P>
+
+The
+<I>pthread_getschedparam()</I>
+function retrieves the scheduling policy and scheduling parameters
+for the thread whose thread ID is given by
+<I>thread</I>
+and stores those values in
+<I>policy</I>
+and
+<I>param</I>,
+respectively.
+The priority value returned from
+<I>pthread_getschedparam()</I>
+is the value specified by the most recent
+<I>pthread_setschedparam()</I>
+or
+<I>pthread_create()</I>
+call affecting the target thread,
+and reflects any temporary adjustments to its priority
+as a result of any priority inheritance or ceiling functions.
+The
+<I>pthread_setschedparam()</I>
+function sets the scheduling policy
+and associated scheduling parameters for the thread whose
+thread ID is given by
+<I>thread</I>
+to the policy and associated parameters provided in
+<I>policy</I>
+and
+<I>param</I>,
+respectively.
+<P>
+
+The
+<I>policy</I>
+parameter may have the value SCHED_OTHER,
+that has implementation-dependent scheduling parameters,
+SCHED_FIFO or SCHED_RR,
+that have the single scheduling parameter,
+<I>priority.</I>
+<P>
+
+If the
+<I>pthread_setschedparam()</I>
+function fails, no scheduling parameters will be changed
+for the target thread.
+<A NAME="lbPC">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_getschedparam()</I>
+and
+<I>pthread_setschedparam()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbPD">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_getschedparam()</I>
+and
+<I>pthread_setschedparam()</I>
+functions will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOSYS</FONT>]<DD>
+
+The option _POSIX_THREAD_PRIORITY_SCHEDULING is not defined and the
+implementation does not support the function.
+</DL>
+<P>
+
+The
+<I>pthread_getschedparam()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ESRCH</FONT>]<DD>
+
+The value specified by
+<I>thread</I>
+does not refer to a existing thread.
+</DL>
+<P>
+
+The
+<I>pthread_setschedparam()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>policy</I>
+or one of the scheduling parameters associated with
+the scheduling policy
+<I>policy</I>
+is invalid.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOTSUP</FONT>]<DD>
+
+An attempt was made to set the policy or scheduling parameters to
+an unsupported value.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EPERM</FONT>]<DD>
+
+The caller does not have the appropriate permission to set
+either the scheduling parameters or the scheduling policy of the
+specified thread.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EPERM</FONT>]<DD>
+
+The implementation does not allow the application to modify
+one of the parameters to the value specified.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ESRCH</FONT>]<DD>
+
+The value specified by
+<I>thread</I>
+does not refer to a existing thread.
+</DL>
+<A NAME="lbPE">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbPF">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbPG">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbPH">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>sched_setparam()</I>,
+<I>sched_getparam()</I>,
+<I>sched_setscheduler()</I>,
+<I>sched_getscheduler()</I>,
+<I>&lt;pthread.h</I>&gt;,
+<I>&lt;sched.h</I>&gt;.
+<A NAME="lbPI">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbPJ">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_setspecific,</B> <B>pthread_getspecific</B> - thread-specific data management
+<A NAME="lbPK">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_setspecific</I>(pthread_key_t <I>key</I>, const void *<I>value</I>);
+void *<I>pthread_getspecific</I>(pthread_key_t <I>key</I>);
+<A NAME="lbPL">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_setspecific()</I>
+function associates a thread-specific
+<I>value</I>
+with a
+<I>key</I>
+obtained via a previous call to
+<I>pthread_key_create()</I>.
+Different threads may bind different values to the same key.
+These values are typically pointers to blocks of dynamically allocated memory
+that have been reserved for use by the calling thread.
+<P>
+
+The
+<I>pthread_getspecific()</I>
+function returns the value currently bound to the specified
+<I>key</I>
+on behalf of the calling thread.
+<P>
+
+The effect of calling
+<I>pthread_setspecific()</I>
+or
+<I>pthread_getspecific()</I>
+with a
+<I>key</I>
+value not obtained from
+<I>pthread_key_create()</I>
+or after
+<I>key</I>
+has been deleted with
+<I>pthread_key_delete()</I>
+is undefined.
+<P>
+
+Both
+<I>pthread_setspecific()</I>
+and
+<I>pthread_getspecific()</I>
+may be called from a thread-specific data destructor function.
+However, calling
+<I>pthread_setspecific()</I>
+from a destructor may result in lost storage or infinite loops.
+<P>
+
+Both functions may be implemented as macros.
+<A NAME="lbPM">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+The function
+<I>pthread_getspecific()</I>
+returns the thread-specific data value
+associated with the given
+<I>key</I>.
+If no thread-specific data value is associated with
+<I>key</I>,
+then the value NULL is returned.
+<P>
+
+If successful, the
+<I>pthread_setspecific()</I>
+function returns zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbPN">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_setspecific()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ENOMEM</FONT>]<DD>
+
+Insufficient memory exists to associate the value with the key.
+</DL>
+<P>
+
+The
+<I>pthread_setspecific()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The key value is invalid.
+</DL>
+<P>
+
+No errors are returned from
+<I>pthread_getspecific()</I>.
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbPO">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbPP">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbPQ">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbPR">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_key_create()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbPS">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbPT">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_join</B> - wait for thread termination
+<A NAME="lbPU">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_join</I>(pthread_t <I>thread</I>, void **<I>value_ptr</I>);
+<A NAME="lbPV">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_join()</I>
+function suspends execution of the calling thread until the target
+<I>thread</I>
+terminates, unless the target
+<I>thread</I>
+has already terminated.
+On return from a successful
+<I>pthread_join()</I>
+call with a non-NULL
+<I>value_ptr</I>
+argument, the value passed to
+<I>pthread_exit()</I>
+by the terminating thread is made available in the location referenced by
+<I>value_ptr</I>.
+When a
+<I>pthread_join()</I>
+returns successfully, the target thread has been terminated.
+The results of multiple simultaneous calls to
+<I>pthread_join()</I>
+specifying the same target thread are undefined.
+If the thread calling
+<I>pthread_join()</I>
+is canceled, then the target thread will not be detached.
+<P>
+
+It is unspecified whether a thread that has exited but remains unjoined
+counts against _POSIX_THREAD_THREADS_MAX.
+<A NAME="lbPW">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_join()</I>
+function returns zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbPX">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_join()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The implementation has detected that the value specified by
+<I>thread</I>
+does not refer to a joinable thread.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ESRCH</FONT>]<DD>
+
+No thread could be found corresponding to that specified
+by the given thread <FONT SIZE="-1">ID</FONT>.
+</DL>
+<P>
+
+The
+<I>pthread_join()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EDEADLK</FONT>]<DD>
+
+A deadlock was detected or
+the value of
+<I>thread</I>
+specifies the calling thread.
+</DL>
+<P>
+
+The
+<I>pthread_join()</I>
+function will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbPY">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbPZ">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbQA">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbQB">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_create()</I>,
+<I>wait()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbQC">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbQD">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_key_create</B> - thread-specific data key creation
+<A NAME="lbQE">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_key_create</I>(pthread_key_t *<I>key</I>, void (*<I>destructor</I>)(void*));
+<A NAME="lbQF">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+This function creates a thread-specific data
+key visible to all threads in the process.
+Key values provided by
+<I>pthread_key_create()</I>
+are opaque objects used to locate thread-specific data.
+Although the same key value may be used by different threads,
+the values bound to the key by
+<I>pthread_setspecific()</I>
+are maintained on a per-thread basis and persist
+for the life of the calling thread.
+<P>
+
+Upon key creation,
+the value NULL is associated with the new key in all active threads.
+Upon thread creation,
+the value NULL is associated with all defined keys in the new thread.
+<P>
+
+An optional destructor function may be associated with
+each key value.
+At thread exit, if a key value has a non-NULL destructor pointer,
+and the thread has a non-NULL value associated with that key,
+the function pointed to is called with the current associated value
+as its sole argument.
+The order of destructor calls is unspecified
+if more than one destructor exists for a thread when it exits.
+<P>
+
+If, after all the destructors have been called for all non-NULL values
+with associated destructors,
+there are still some non-NULL values with associated destructors,
+then the process will be repeated.
+If, after at least PTHREAD_DESTRUCTOR_ITERATIONS
+iterations of destructor calls for outstanding non-NULL values,
+there are still some non-NULL values with associated destructors,
+implementations may stop calling destructors,
+or they may continue calling destructors
+until no non-NULL values with associated destructors exist,
+even though this might result in an infinite loop.
+<A NAME="lbQG">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_key_create()</I>
+function stores the newly created key value at
+<I>*key</I>
+and returns zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbQH">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_key_create()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EAGAIN</FONT>]<DD>
+
+The system lacked the necessary resources to create another thread-specific
+data key, or the system-imposed limit on the total number of keys per process
+<FONT SIZE="-1">PTHREAD_KEYS_MAX</FONT> has been exceeded.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOMEM</FONT>]<DD>
+
+Insufficient memory exists to create the key.
+</DL>
+<P>
+
+The
+<I>pthread_key_create()</I>
+function will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbQI">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbQJ">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbQK">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbQL">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_getspecific()</I>,
+<I>pthread_setspecific()</I>,
+<I>pthread_key_delete()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbQM">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbQN">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_key_delete</B> - thread-specific data key deletion
+<A NAME="lbQO">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_key_delete</I>(pthread_key_t <I>key</I>);
+<A NAME="lbQP">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+This function deletes a thread-specific data
+key previously returned by
+<I>pthread_key_create()</I>.
+The thread-specific data values associated with
+<I>key</I>
+need not be NULL at the time
+<I>pthread_key_delete()</I>
+is called.
+It is the responsibility of the application
+to free any application storage
+or perform any cleanup actions for data structures
+related to the deleted key or associated thread-specific data
+in any threads;
+this cleanup can be done either before or after
+<I>pthread_key_delete()</I>
+is called.
+Any attempt to use
+<I>key</I>
+following the call to
+<I>pthread_key_delete()</I>
+results in undefined behaviour.
+<P>
+
+The
+<I>pthread_key_delete()</I>
+function is callable from within destructor functions.
+No destructor functions will be invoked by
+<I>pthread_key_delete()</I>.
+Any destructor function that may have been associated with
+<I>key</I>
+will no longer be called upon thread exit.
+<A NAME="lbQQ">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_key_delete()</I>
+function returns zero.
+Otherwise, an error number is returned to indicate the error.
+<A NAME="lbQR">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_key_delete()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The
+<I>key</I>
+value is invalid.
+</DL>
+<P>
+
+The
+<I>pthread_key_delete()</I>
+function will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbQS">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbQT">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbQU">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbQV">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_key_create()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbQW">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbQX">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_kill</B> - send a signal to a thread
+<A NAME="lbQY">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/signal.h">signal.h</A>&gt;
+<P>
+
+int <I>pthread_kill</I>(pthread_t <I>thread</I>, int <I>sig</I>);
+<A NAME="lbQZ">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_kill()</I>
+function is used to request that a signal be delivered to the specified thread.
+<P>
+
+As in
+<I>kill()</I>,
+if
+<I>sig</I>
+is zero, error checking is performed but no signal is actually sent.
+<A NAME="lbRA">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+Upon successful completion, the function returns a value of zero.
+Otherwise the function returns an error number.
+If the
+<I>pthread_kill()</I>
+function fails, no signal is sent.
+<A NAME="lbRB">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_kill()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">ESRCH</FONT>]<DD>
+
+No thread could be found corresponding to that specified
+by the given thread <FONT SIZE="-1">ID</FONT>.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value of the
+<I>sig</I>
+argument is an invalid or unsupported signal number.
+</DL>
+<P>
+
+The
+<I>pthread_kill()</I>
+function will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbRC">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbRD">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbRE">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbRF">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>kill()</I>,
+<I>pthread_self()</I>,
+<I>raise()</I>,
+<I>&lt;signal.h</I>&gt;.
+<A NAME="lbRG">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbRH">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_mutex_init,</B> <B>pthread_mutex_destroy</B> - initialise or destroy a mutex
+<A NAME="lbRI">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_mutex_init</I>(pthread_mutex_t *<I>mutex</I>,
+const pthread_mutexattr_t *<I>attr</I>);
+int <I>pthread_mutex_destroy</I>(pthread_mutex_t *<I>mutex</I>);
+pthread_mutex_t <I>mutex</I> = PTHREAD_MUTEX_INITIALIZER;
+<A NAME="lbRJ">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_mutex_init()</I>
+function initialises the mutex referenced by
+<I>mutex</I>
+with attributes specified
+by
+<I>attr</I>.
+If
+<I>attr</I>
+is NULL,
+the default mutex attributes are used; the effect is the same as
+passing the address of a default mutex attributes object.
+Upon successful initialisation, the state of the mutex becomes
+initialised and unlocked.
+<P>
+
+Attempting to initialise an already initialised
+mutex results in
+undefined behaviour.
+<P>
+
+The
+<I>pthread_mutex_destroy()</I>
+function destroys the mutex object referenced by
+<I>mutex</I>;
+the mutex object becomes, in effect, uninitialised.
+An implementation may cause
+<I>pthread_mutex_destroy()</I>
+to set the object referenced by
+<I>mutex</I>
+to an invalid value.
+A destroyed mutex object
+can be re-initialised using
+<I>pthread_mutex_init()</I>;
+the results of otherwise referencing the object after it has been destroyed
+are undefined.
+<P>
+
+It is safe to destroy an initialised mutex that is unlocked.
+Attempting to destroy a locked mutex results in
+undefined behaviour.
+<P>
+
+In cases where default mutex attributes are appropriate,
+the macro PTHREAD_MUTEX_INITIALIZER
+can be used to initialise mutexes that are statically allocated.
+The effect is equivalent to dynamic initialisation by a call to
+<I>pthread_mutex_init()</I>
+with parameter
+<I>attr</I>
+specified as NULL,
+except that no error checks are performed.
+<A NAME="lbRK">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_mutex_init()</I>
+and
+<I>pthread_mutex_destroy()</I>
+functions return zero.
+Otherwise, an error number is returned to indicate the error.
+The [EBUSY] and [EINVAL] error checks, if implemented,
+act as if they were performed immediately
+at the beginning of processing for the function
+and cause an error return
+prior to modifying the state of the mutex specified by
+<I>mutex</I>.
+<A NAME="lbRL">&nbsp;</A>
+<H2>ERRORS</H2>
+
+The
+<I>pthread_mutex_init()</I>
+function will fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EAGAIN</FONT>]<DD>
+
+The system lacked the necessary resources (other than memory)
+to initialise another mutex.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">ENOMEM</FONT>]<DD>
+
+Insufficient memory exists to initialise the mutex.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EPERM</FONT>]<DD>
+
+The caller does not have the privilege to perform the operation.
+</DL>
+<P>
+
+The
+<I>pthread_mutex_init()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EBUSY</FONT>]<DD>
+
+The implementation has detected an attempt
+to re-initialise the object referenced by
+<I>mutex</I>,
+a previously initialised, but
+not yet destroyed, mutex.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>attr</I>
+is invalid.
+</DL>
+<P>
+
+The
+<I>pthread_mutex_destroy()</I>
+function may fail if:
+
+<BR>
+
+
+
+
+<DL COMPACT>
+<DT>[<FONT SIZE="-1">EBUSY</FONT>]<DD>
+
+The implementation has detected an attempt to destroy
+the object referenced by
+<I>mutex</I>
+while it is locked or referenced
+(for example, while being used in a
+<I>pthread_cond_wait()</I>
+or
+<I>pthread_cond_timedwait()</I>)
+by another thread.
+
+<BR>
+
+
+
+
+<DT>[<FONT SIZE="-1">EINVAL</FONT>]<DD>
+
+The value specified by
+<I>mutex</I>
+is invalid.
+</DL>
+<P>
+
+These functions will not return an error code of [<FONT SIZE="-1">EINTR</FONT>].
+<A NAME="lbRM">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+None.
+<A NAME="lbRN">&nbsp;</A>
+<H2>APPLICATION USAGE</H2>
+
+None.
+<A NAME="lbRO">&nbsp;</A>
+<H2>FUTURE DIRECTIONS</H2>
+
+None.
+<A NAME="lbRP">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<I>pthread_mutex_getprioceiling()</I>,
+<I>pthread_mutex_lock()</I>,
+<I>pthread_mutex_unlock()</I>,
+<I>pthread_mutex_setprioceiling()</I>,
+<I>pthread_mutex_trylock()</I>,
+<I>pthread_mutexattr_getpshared()</I>,
+<I>pthread_mutexattr_setpshared()</I>,
+<I>&lt;pthread.h</I>&gt;.
+<A NAME="lbRQ">&nbsp;</A>
+<H2>______________________________________________________________________</H2>
+
+<A NAME="lbRR">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>pthread_mutex_setprioceiling,</B> <B>pthread_mutex_getprioceiling</B>
+- change the priority ceiling of a mutex
+(<B>REALTIME THREADS</B>)
+<A NAME="lbRS">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+#include &lt;<A HREF="file:/usr/include/pthread.h">pthread.h</A>&gt;
+<P>
+
+int <I>pthread_mutex_setprioceiling</I>(pthread_mutex_t *<I>mutex</I>, int <I>prioceiling</I>, int *<I>old_ceiling</I>);
+<P>
+
+int <I>pthread_mutex_getprioceiling</I>(const pthread_mutex_t *<I>mutex</I>, int *<I>prioceiling</I>);
+<A NAME="lbRT">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<I>pthread_mutex_getprioceiling()</I>
+function returns the current priority ceiling of the mutex.
+<P>
+
+The
+<I>pthread_mutex_setprioceiling()</I>
+function either locks the mutex if it is unlocked, or blocks until it can
+successfully lock the mutex, then it
+changes the mutex's priority ceiling and releases the mutex.
+When the change is successful, the previous value of the
+priority ceiling is returned in
+<I>old_ceiling</I>.
+The process of locking the mutex need not adhere
+to the priority protect protocol.
+<P>
+
+If the
+<I>pthread_mutex_setprioceiling()</I>
+function fails, the mutex priority ceiling is not changed.
+<A NAME="lbRU">&nbsp;</A>
+<H2>RETURN VALUE</H2>
+
+If successful, the
+<I>pthread_mutex_setprioceiling()<

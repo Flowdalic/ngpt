@@ -1,0 +1,174 @@
+  libthread_db for NGPT
+
+  ChangeLog
+  =========
+
+  This is the list of all(!) changes to this source tree. For a list
+  of just the user-visible and/or major changes please have a look at
+  the NEWS file.
+
+    ____     _
+   |___ \   / |
+     __) |  | |
+    / __/ _ | |_
+  _|_____(_)|_(_)_________________________________________________________
+
+  Changes between 2.0.3 and 2.1.0
+
+   *) td_thr_getgregs.c:
+	s390 compilation error fixes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) td_thr_setgregs.c:
+	Changes to fix compile problem for ia64.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+  Changes between 2.0.2 and 2.0.3
+
+   *) td_thr_getgregs.c:
+   *) td_thr_setgregs.c:
+   *) td_utils.c:
+   *) thread_dbP.h:
+	Updates for PowerPC and S390 ucontext handling.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+  Changes between 2.0.1 and 2.0.2
+
+   *) td_thr_getfpregs.c:
+	Removed unused variable to eliminate warning.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) td_thr_getfpregs.c:
+   *) td_thr_getgregs.c:
+   *) td_thr_setfpregs.c:
+   *) td_thr_setgregs.c:
+   *) td_utils.c:
+	Additions for supported architectures and fixes for i386 
+	and IPF.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_thr_getfpregs.c:
+   *) td_thr_getgregs.c:
+   *) td_thr_setfpregs.c:
+   *) td_thr_setgregs.c:
+	Framework for addressing the supported platforms. Thus far
+	only IA32 fully builds and is tested. More to come.
+      [Dave Howell, <david.p.howell@intel.com>]
+   *) td_ta_new.c:
+	Code cleanup, from attach investigation.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) Makefile.in:
+	Fixed the install/uninstall path.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) td_ta_lwp_info.c:
+	Fixed reference that was causing an invalid LWP number to be used
+	that resulted in a crash of the debug session.
+      td_ta_thr_iter.c:
+	Fixed return status for bad thread tcb read to skip over thread 
+	as a dead thread (ie. don't call iterator function for it). This
+	stops failures when a thread tcb is unmapped on terminate and we
+ 	try to get it's status.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+  Changes between 2.0.0 and 2.0.1
+
+   *) Makefile.in:
+	Cleaned up and fixed install-backup option.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) td_thr_setgregs.c:
+   *) td_thr_getfpregs.c:
+   *) td_thr_setfpregs.c:
+	Fixed normalizing address bug for mctx fpregs in gdb address space
+	that was causing a gdb core dump. Fixed setting of registers in a 
+	thread mctx when it's waiting.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_utils.c:
+   *) Makefile.in:
+   *) thread_dbP.h:
+   *) td_thr_getgregs.c:
+   *) td_thr_setgregs.c:
+	Correct problems setting the registers with prgregset_t vs 
+	gregset_t ordering differences.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_thr_getfpregs.c:
+   *) td_thr_getgregs.c:
+   *) td_thr_setfpregs.c:
+   *) td_thr_setgregs.c:
+	Fix to correct get/set of ganeral and floating point registers
+	for ucontext_t mctx. Also fixes ngpt pth_init case failure.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_thr_validate.c:
+	Fix to correct detection of valid threads and reduce number of
+	gdb ptraces to do the validation.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_ta_map_lwp2thr.c:
+	Cleaned up compiler warnings.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) td_ta_lwp_info.c:
+   *) thread_dbP.h:
+   *) Makefile.in:
+	Added new module td_ta_lwp_info.c to do target lwp data access 
+	and ngpt runtime native to gdb/libthread_db lwp mappings.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_symbol_list.c:
+	Changes to add runtime native list access for td_ta_lwp_info.c
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_ta_map_id2thr.c:
+	Reworked to clean up use of handles.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_ta_map_lwp2thr.c:
+	Reworked in conjunction with td_ta_lwp_info.c to get runtime 
+	native state for mapping a thread id to a lwp (native).
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_ta_new.c:
+   *) td_ta_thr_iter.c:
+   *) td_thr_validate.c:
+	Added debug error reporting, generally done for all modules that
+	were touched. If there are errors in libthread_db runtime recompile
+	with '-DTD_DEBUG' and install the new library, and trace and error
+	debug messages will be output to the screen. The volume is heavy,
+	so it is only for debug but is helpful.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_thr_get_info.c:
+	Reworked to use td_ta_lwp_info.c to access runtime lwp (native)
+	structures, for identifying the lwp (native) that a thread runs
+	on for the debugger.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_thr_getfpregs.c:
+   *) td_thr_getgregs.c:
+   *) td_thr_setfpregs.c:
+   *) td_thr_setgregs.c:
+	Reworked to get/set the register sets with knowledge of the thread
+	mctx register state.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) thread_db.h:
+	Cleaned up include files
+      [Dave Howell, <david.p.howell@intel.com>]
+	
+     _    ___
+    / |  / _ \
+    | | | (_) |
+    | |_ \__, |
+  __|_(_)__/_/____________________________________________________________
+
+  New for 1.9.90 (2.0 RC1)
+   *) All files
+	Initial release, from linuxthreads_db (1.0)
+      [Dave Howell, <david.p.howell@intel.com>]
+
+  

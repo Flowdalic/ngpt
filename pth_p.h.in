@@ -1,0 +1,353 @@
+/*
+**  NGPT - Next Generation POSIX Threading
+**  Copyright (c) 2001 IBM Corporation <babt@us.ibm.com>
+**  Portions Copyright (c) 1999-2000 Ralf S. Engelschall <rse@engelschall.com>
+**
+**  This file is part of NGPT, a non-preemptive thread scheduling
+**  library which can be found at http://www.ibm.com/developer.
+**
+**  This library is free software; you can redistribute it and/or
+**  modify it under the terms of the GNU Lesser General Public
+**  License as published by the Free Software Foundation; either
+**  version 2.1 of the License, or (at your option) any later version.
+**
+**  This library is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+**  Lesser General Public License for more details.
+**
+**  You should have received a copy of the GNU Lesser General Public
+**  License along with this library; if not, write to the Free Software
+**  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+**  USA.
+**
+**  pth_p.h: Pth private API definitions
+*/
+
+#ifndef _PTH_P_H_
+#define _PTH_P_H_
+
+/* System 390 Linux doesn't define __clone or __clone2 */
+#ifdef __s390__
+#define	clone	__clone
+#define clone2	__clone2
+#endif
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
+/* mandatory system headers */
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <setjmp.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <sys/socket.h>
+#include <sys/mman.h>
+
+/* library version */
+#define _PTH_VERS_C_AS_HEADER_
+#include "pth_vers.c"
+#undef  _PTH_VERS_C_AS_HEADER_
+
+/* public API headers */
+#define _PTH_PRIVATE
+#include "pth.h"
+#undef _PTH_PRIVATE
+
+/* private syscall definitions */
+#include "syscall.h"
+
+/* autoconf defines and macros */
+#include "pth_acdef.h"
+#include "pth_acmac.h"
+
+/* optional system headers */
+#ifdef HAVE_SYS_RESOURCE_H
+#include <sys/resource.h>
+#endif
+#ifdef HAVE_NET_ERRNO_H
+#include <net/errno.h>
+#endif
+
+/* dmalloc support */
+#ifdef PTH_DMALLOC
+#include <dmalloc.h>
+#endif
+
+#ifdef THREAD_DB
+#include "thread_db/thread_db.h"
+#endif
+
+#ifdef ENABLE_HP_TIMING
+#include "hp-timing.h"
+#endif
+
+/* non-blocking flags */
+#ifdef  O_NONBLOCK
+#define O_NONBLOCKING O_NONBLOCK
+#else
+#ifdef  O_NDELAY
+#define O_NONBLOCKING O_NDELAY
+#else
+#ifdef  FNDELAY
+#define O_NONBLOCKING FNDELAY
+#else
+#error "No O_NONBLOCK, O_NDELAY or FNDELAY flag available!"
+#endif
+#endif
+#endif
+
+/* Jump optimizations */
+
+#if __GNUC__ == 2 && __GNUC_MINOR__ < 96
+#define __builtin_expect(p,q)	(p)
+#define likely(p) (p)
+#define unlikely(p) (p)
+#else
+#define likely(p) __builtin_expect((unsigned long)(p), 1)
+#define unlikely(p) __builtin_expect((unsigned long)(p), 0)
+#endif
+
+#ifdef ASSERTS_ON
+#define pth_assert(c)	\
+    if (!(c)) {		\
+	fprintf(stderr, "%d.%d:%s,%04d: Assert failed.\n", (int)getpid(), (int)k_gettid(), __FILE__, __LINE__); \
+	abort();	\
+    }	
+#else
+#define pth_assert(c)	    /* NOP */
+#endif
+
+
+#define pth_acquire_lock(lock)    \
+    _pth_acquire_lock((lock), (current_tid()))
+#define pth_try_lock(lock)	    \
+    _pth_try_lock((lock), (current_tid()))
+#define pth_release_lock(lock)    \
+    _pth_release_lock((lock), (current_tid()))
+
+#define pth_lock_all()				\
+{   pid_t tid = current_tid();			\
+    _pth_acquire_lock(&(pth_NQ.q_lock), tid);	\
+    _pth_acquire_lock(&(pth_RQ.q_lock), tid);   \
+    _pth_acquire_lock(&(pth_WQ.q_lock), tid);	\
+    _pth_acquire_lock(&(pth_SQ.q_lock), tid);	\
+    _pth_acquire_lock(&(pth_DQ.q_lock), tid);	\
+}
+    
+#define pth_release_all()			\
+{   pid_t tid = current_tid();			\
+    _pth_release_lock(&(pth_NQ.q_lock), tid);	\
+    _pth_release_lock(&(pth_RQ.q_lock), tid);	\
+    _pth_release_lock(&(pth_WQ.q_lock), tid);	\
+    _pth_release_lock(&(pth_SQ.q_lock), tid);	\
+    _pth_release_lock(&(pth_DQ.q_lock), tid);	\
+}
+
+#define pth_lock_init(lock) pth_qlock_init(&(lock))
+static __inline__
+void pth_qlock_init (struct pth_qlock_st *lock)
+{
+    /* FIXME: remove the memset() init should only _initialize_ */
+  memset(lock, 0, sizeof (struct pth_qlock_st));
+  spinlock_init (&lock->spinlock);
+}
+
+#define CURRENT_NAME()\
+    (pth_get_current() != NULL) ? pth_get_current()->name : "NULL"
+
+#define strong_alias(orig, alias) \
+ asm(".globl " #alias "\n\t.set " #alias "," #orig);
+
+#define versioned_symbol(real, name, version) \
+ __asm__(".symver " #real "," #name "@@" #version);
+
+/* compiler happyness: avoid ``empty compilation unit'' problem */
+#define COMPILER_HAPPYNESS(name) \
+    int __##name##_unit = 0;
+
+#define pth_first_native     	       pth_native_list[0]
+#define native_is_group_leader(descr)  (descr == &pth_first_native)
+
+/* return number of active threads */
+#define pth_active_threads (pth_threads_count - pqueue_total (&pth_DQ))
+
+#define sigispending(x, sig)  ((x[__sigword(sig)] & __sigmask(sig)) ? 1 : 0)
+#define sigaddpending(x, sig) (*(&x[__sigword(sig)]) |= __sigmask(sig))
+#define sigdelpending(x, sig) (*(&x[__sigword(sig)]) &= ~__sigmask(sig))
+
+#define CHECK_INITIALIZED if (unlikely(pth_initialized != TRUE)) pth_init()
+
+ /* This needs likely()/unlikely() and gettid for debug.h */
+
+#include "pqueue.h"
+
+  /* generated contents */
+BEGIN_DECLARATION
+==#==
+END_DECLARATION
+
+#include "useldt.h"
+
+#ifdef NATIVE_SELF
+#define current_tid()		    \
+    (pth_shutdown_inprogress == TRUE) ? k_gettid() : NATIVE_SELF->tid
+#define pth_get_native_descr()      \
+    ((pth_descr_t)(pth_shutdown_inprogress ? NULL : NATIVE_SELF))
+#define pth_get_current()           \
+    ((pth_t)(pth_shutdown_inprogress ?  NULL : NATIVE_SELF->current))
+#else
+#define pth_get_current		_pth_get_current
+#define pth_get_native_descr	_pth_get_native_descr
+#define current_tid()		    \
+    pth_get_native_descr()->tid
+#endif
+
+static __inline__ int k_tkill(pid_t pid, int sig);
+static __inline__ int k_nanosleep(const struct timespec *requested_time, struct timespec *remaining);
+static __inline__ int _pth_release_lock(pth_qlock_t * spinlock, pid_t ptid);
+static __inline__ void _pth_acquire_lock(pth_qlock_t * spinlock, pid_t ptid);
+static __inline__ int _pth_try_lock(pth_qlock_t * spinlock, pid_t ptid);
+
+#ifdef THREAD_DB
+extern pth_t pth_spawn_cb(pth_attr_t attr, void *(*func)(void *), void *arg,
+						void (*thr_complete)(pth_t));
+#define PTH_SPAWN(attr, func, arg)	pth_spawn_cb(attr, func, arg, NULL)
+#else
+#define PTH_SPAWN(attr, func, arg)	pth_spawn(attr, func, arg)
+#endif
+
+static __inline__ int k_tkill(pid_t pid, int sig) {
+	return syscall(__NR_tkill, pid, sig);
+}
+
+static __inline__ int k_nanosleep(const struct timespec *requested_time, struct timespec *remaining) {
+	return syscall(__NR_nanosleep, requested_time, remaining);
+}
+
+#include <bitops.h>
+
+#define QLOCK_DEBUG 0
+
+static __inline__ int _pth_release_lock(pth_qlock_t * spinlock, pid_t ptid)
+{
+    pid_t tid = 0;
+    pth_descr_t descr = NULL;
+    if (ptid == 0) {
+#ifdef NATIVE_SELF
+	descr = NATIVE_SELF;
+	tid = descr->tid;
+#else
+	descr = pth_get_native_descr();
+	tid = (descr != NULL) ? descr->tid : k_gettid();
+#endif
+    } else
+	tid = ptid;
+
+#ifdef __powerpc__
+    asm volatile("eieio":::"memory");
+#endif
+
+    /* If not the owner, fail... */
+    if (spinlock->owner != tid)
+	return -1;
+    spinlock->count--;
+    if (spinlock->count == 0) {
+	spinlock->owner = 0;
+        spin_unlock (&spinlock->spinlock, (void *) ptid);
+    }
+    return 0;
+}
+
+static __inline__ void _pth_acquire_lock(pth_qlock_t * spinlock, pid_t ptid)
+{
+    pid_t tid = 0;
+    pth_descr_t descr = NULL;
+    int result;
+#if QLOCK_DEBUG > 0
+    struct timespec _lock_timeout = { 20, 0 };
+    struct timespec *lock_timeout = &_lock_timeout;
+#else
+    struct timespec *lock_timeout = NULL;
+#endif
+    
+    if (ptid == 0) {
+#ifdef NATIVE_SELF
+	descr = NATIVE_SELF;
+	tid = descr->tid;
+#else
+	descr = pth_get_native_descr();
+	tid = (descr != NULL) ? descr->tid : k_gettid();
+#endif
+    } else
+	tid = ptid;
+
+    /* Already have the lock? */
+    if (tid == spinlock->owner) {
+	spinlock->count++;
+	return;
+    }
+
+    result = spin_lock (&spinlock->spinlock, (void *) ptid, lock_timeout);
+    if (result < 0 && QLOCK_DEBUG) {
+        __debugmsg ("%s (%p, %lx): spin lock error %d\n", __FUNCTION__,
+                    spinlock, (unsigned long) ptid, result);
+        stack_dump();
+        __debugmsg_int (NULL, "\n");
+        abort();
+    }
+    spinlock->count = 1;
+    spinlock->owner = tid;
+}
+
+static __inline__ int _pth_try_lock(pth_qlock_t * spinlock, pid_t ptid)
+{
+    pid_t tid = 0;
+    pth_descr_t descr = NULL;
+    if (ptid == 0) {
+#ifdef NATIVE_SELF
+	descr = NATIVE_SELF;
+	tid = descr->tid;
+#else
+	descr = pth_get_native_descr();
+	tid = (descr != NULL) ? descr->tid : k_gettid();
+#endif
+    } else
+	tid = ptid;
+
+    if (tid == spinlock->owner) {
+	spinlock->count++;
+	return 0;
+    }
+
+    if (spin_trylock (&spinlock->spinlock, (void *) ptid)) {
+	return EAGAIN;
+    }
+    spinlock->count = 1;
+    spinlock->owner = tid;
+    return 0;
+}
+
+static __inline__
+void pth_qlock_dump (const pth_qlock_t *lock)
+{
+    __debugmsg_int (NULL, "{ spinlock: ");
+    spinlock_dump (&lock->spinlock);
+    __debugmsg_int (NULL, ", owner: %x, count: %d }",
+                    lock->owner, lock->count);
+}
+
+
+#endif /* _PTH_P_H_ */
+

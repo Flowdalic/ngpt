@@ -1,0 +1,45 @@
+  NGPT - Next Generation POSIX Threading
+
+  TODO - last update 2002-05-01
+  ====
+
+  ITEMS UNDER CONSIDERATION FOR 2.0
+  ---------------------------------
+
+  1.	Support for pshared flag = PTHREAD_PROCESS_SHARED attribute of mutexes.
+	ACCEPTED IN 2.0.
+	IMPLEMENTED IN 1.9.0.
+  
+  2.	POSIX Semaphore support.  There's a prototype but it needs a lot more work before
+	it can be integrated in the main stream.
+	ACCEPTED IN 2.0.
+	IMPLEMENTED IN 1.9.0.
+
+  3.	Configuration file may be needed. Currently all the configuration parameters of the library
+	are passed via environment variables.  An ngpt.conf file in /etc needs to be created and
+	be used to access configuration parameters of the library.
+	UNDER EVALUATION IN 2.0.
+
+  4.	Full debugging support.  There is none currently.  We need to build and test a version of
+	gdb that will support this threading model.
+	ACCEPTED IN 2.0.
+
+  5.	Integration with glibc.  While not immediately pressing, the code base needs to be
+	prepped for future integration with glibc.  This may involve some architectural changes
+	but at present it doesn't seem as though this will be necessary.  Needs serious
+	investigation.
+	COMPLETE IN 1.2.2.  (NOTE: NGPT is not integrated into glibc builds but is compatible.)
+	
+  6.	POSIX Realtime support.  There's no support currently for the POSIX Realtime APIs. With
+	the advent of kernel 2.4, these APIs may need to be supported before glibc integration
+	can take place.
+	PLANNED FOR POST 2.0.
+
+  7.	Documentation needs to be updated to reflect the use of environment variables to trigger
+	various behavior and overrides.  Additionally, there needs to be a few more enviroment
+	variables exposed to enable further runtime control of the library.
+	ACCEPTED IN 2.0.
+
+  9.	"make test" not appropriate when building for a cross-compile environment.  This should be
+	addressed.
+	UPDATE: Anyone know a good way of fixing this?

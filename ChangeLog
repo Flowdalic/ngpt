@@ -1,0 +1,3987 @@
+  NGPT - Next Generation POSIX Threading
+
+  ChangeLog
+  =========
+
+  This is the list of all(!) changes to this source tree. For a list
+  of just the user-visible and/or major changes please have a look at
+  the NEWS file.
+
+    ____     ____
+   |___ \   |___ \
+     __) |    _ ) |
+    / __/ _  / __/ _
+  _|_____(_)|_____(_)_____________________________________________________
+
+  Changes after 2.2.0
+   *) pth_high.c:
+      pth_p.h.in:
+      shm_open.c:
+      shm_unlink.c:
+	Changes to add support to poll() for XPG4.2 flags, was causing
+	failure in Visibroker server.
+	(CGL bugzilla 736).
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.c:
+      pthread.h.in:
+	Fixed pthread_mutex_destroy and pthread.h.in to handle case 
+	where PTHREAD_MUTEX_INITIALIZER sets state and then nothing
+	but pthread_mutex_destroy is called. Similar to changes made
+	for cond and rwlock destroy cases added for ngpt-2.2.0.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) RELEASE:
+	Change to document arguments to ngptc.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) ngptinit.in:
+      ngptc.c:
+	Change to allow arguments to be passed through to ngptc and to
+	insure that only root can run ngptc.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) Makefile.in:
+      ngptc.c:
+      pth_sync.c:
+      shared_area_file.c:
+      shm_open.c:
+      shm_unlink.c:
+ 	Added a version qualifier to the shared area filename to 
+ 	permit multiple version runtimes to work. Reworked shared
+  	file handling, removed shm_open/shm_unlink and added the 
+ 	shared_area_file modules.
+      [Dave Howell, <david.p.howell@intel.com>]
+ 
+   *) ngptc.c:
+      pth_sync.c:
+      pth_syscall.h:
+      shm_open.c:
+      shm_unlink.c:
+      Makefile.in:
+	Updates to allow shared area address and size to be set at 
+	ngptinit time via options to ngptc. 
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_sync.c:
+	Fix to return proper error code for tryonly cases, from the
+	post to the mailing list by Bing Wei Liu.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_sync.c:
+	Fix to pth_find_shared_mutex to search all objects, no just
+	through the last one in use. 
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_event.c:
+      pth_high.c:
+      pthread.c:
+      pth_sync.c:
+	Clean up in pth_event_key_create to use simple index instead
+	of argument for search. Cleanup in pth_event_key_destroy to 
+	minimize branching. Made pth_event_occured a macro in pth_p.h
+	as PTH_EVENT_OCCURED and fixed other references to use it. 
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_sync.c:
+	Fix to return shared mutex without init if found initialized 
+	and mutex is ROBUST, in pthread_mutex_init.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.c:
+      pth_sync.c:
+	Changes to shared mutex/cond variable initialization to do 
+	a lookup on the ngpt shared area locks before it allocates
+	a new lock.  Added check for mutex/cond init before doing 
+	the lookup or any of the robust handling. Cleaned up shared
+	mutex find/allocate to remove branches.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_sync.c:
+      sysdeps/i386/syscall.h:
+	Specify virtual address where pth_shared_area starts, so that
+	inter process shared objects can properly be handled in the 
+	presense of different virtual memory layouts caused by shared
+	objects included, etc. This implementation specifies address 
+	in sysdep/<arch>/syscall.h and allows redefinition with symbol
+	PTH_SHARED_ADDRESS; if omitted for arch NULL is used as before.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.c:
+        Cleanup of common expression code in pthread_mutex_destroy.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+  Changes between 2.0.3 and 2.2.0
+
+   *) queue.c:
+   *) pqueue.c:
+	Cleaned up queue dump display to not show list entries for 
+	empty priority lists and to limit thread names to the size
+	of the field in the thread tcb.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_native.c:
+   *) pth_sched.c:
+   *) schedule.h:
+	Removed priority warnings for release.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_time.c:
+   *) pthread.c:
+	For TOD based time values with HP_TIMING, convert to the 
+	internal pth_time_t object by taking a difference from SOD 
+	baseline time and adding delta in ticks to baseline ticks.
+	A new API pth_TOD_timeval_to_time was added to do this.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_p.h.in:
+	Added CHECK_INITIALIZED macro to check for library initialization.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Reworked checking for initialization.
+	Wrapped TSD stuff in USE_TSD define and turned off by default this support.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c:
+	Wrapped TSD stuff in USE_TSD define and turned off by default this support.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Added CHECK_INITIALIZED macro to all externalized pthread function to ensure
+	the library is initialized regardless of what pthread api is called initially.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	Call __recv() frpm pth_poll_ev, not recv(), as recv is in the
+	application symbol space.
+      [Dave Howell, <david.p.howell@intel.com>, for Kip Macy]
+
+   *) pth_tcb.c:
+	Fill in missing enumerators for tsd.
+	Initialize tsd get function on first call to tsd set function.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Remove initialization of tsd get function from initialization.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_ring.c:
+	Removed NULL parameter checks and tested if still working 
+	(yes) to reduce conditional branching, added inline cases
+	(pth_ring_append, pth_ring_delete), for pingpong hotspots.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_event.c:
+   *) pth_lib.c:
+   *) pth_ring.c:
+	Minor cleanup based on pingpong.c profile data. Additional 
+	inlining (pth_event_key_getdata), additional branch hints,
+	some code movement to do hot checks first (pth_event).
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) RELEASE:
+	Added information for HP_TIMING for i386, describing how to 
+	enable it and for what architectures it's safe to do it for.
+	Added information for raising size of PTH_MAX_SHARED_OBJECTS
+	(CGL bugzilla 1157).
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_sync.c:
+	Changed definition of PTH_MAX_SHARED_OBJECTS to only be done
+	if it wasn't defined already (CGL bugzilla 1157).
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.h.in:
+   *) pthread.c:
+	Fix pthread_cond_destroy failure when cond structure is 
+	statically initialized from PTHREAD_COND_INITIALIZER.  Also
+	fixed definition of PTHREAD_COND_INITIALIZER to set cn_init.
+	(CGL bugzilla 1174).
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_tcb.c:
+	Fix to put 'do { ... } while (0)' braces around the macros
+	PTH_ELEMENT_INSERT and PTH_ELEMENT_DELETE to fix Seg Fault
+	with pingpong and MAXNATIVETHREADS=1.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_data.c:
+	Fix to catch NULL pth_get_current() in pthread_getspecific()
+	(CGL bugzilla 1156).
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) RELEASE:
+	Added entries in RELEASE for system library references to 
+	libpthread.so.0 (CGL bugzilla 1097).
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.h.in:
+	Fix to PTHREAD_RWLOCK_INITIALIZER to set rw_init flag
+	(CGL bugzilla 1172).
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) libpthread.Versions:
+   *) pthread.c:
+	Added versioned pthread_kill_other_threads_np, to match 
+	Linuxthreads.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.c:
+   *) pth_high.c:
+   *) pth_lib.c:
+	Removal of pthread wrappers where pth symbol definitions will
+	do the same safely. 
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_attr.c:
+   *) pth_lib.c:
+   *) pth_sync.c:
+	Eliminate pth_time_set(x,PTH_TIME_ZERO) invocations, replacing
+	them with 'x = pth_time_zero' statements. This removes branches
+	and indirection inherent with pth_time_set(), and should remain
+	compatible as the types are the same.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_data.c:
+   *) pth_event.c:
+   *) pth_lib.c:
+   *) pth_ring.c:
+   *) pth_sched.c:
+   *) pth_sync.c:
+   *) pth_tcb.c:
+   *) pth_time.c:
+   *) pthread.c:
+   *) td_manager.c:
+	Changes to eliminate calls by using internal macros where 
+	appropriate (PTH_SELF, PTH_ELEMENT_INSERT, PTH_ELEMENT_DELETE)
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pqueue.h:
+	Initialize total in pqueue_init().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c:
+	Do not initialize the time. Bound the native for other than first_native.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	Check for the mx_owner_pid in shared mutex case. 
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) ngpt.spec:
+	Added hp_timing option for rpm builds.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	Added missing release_lock in pthread_mutex_init().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) test_str02.c:
+	When pthread_create() fails, check the return value, not an errno.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) spinlock.h:
+	Added SPINLOCK_NON_FUTEX for non-futex based locking. 
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c:
+	Added event_data and event_count in pth_st.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	Change the way the check for descr null is done to minimize impact on performance.	
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+   *) pth_native.c:
+	Change stack size for scheduler thread to be 32.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth.h.in:
+	Added PTH_EVENT_KEY_MAX. Reduced the size of pth_mutex_st to 64 bytes.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c:
+	Initialize the HP_TIMING for child process. 
+	In pth_fork(), re-coded a while loop to use an if and goto to workaround
+        an optimization problem in gcc 3.2.
+	Release the event_data for a thread.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_event.c:
+	Added pth_event_keys and new routines to handle events for a thread.
+	This will create 16 keys for event handling and memory usage will also
+	be efficient.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_data.c:
+	Remove the release_lock from __pth_key_create() and use the tid for
+	locking in pth_key_create(). Delete duplicate checking.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) futex.h:
+	Initialize the futex->count to 1.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+   *) pth_time.c:
+	Fixes to correct HP_TIMING pth_time_to_timeval function
+	to not compute latest time based on start.
+      [Dave Howell, <david.p.howell@intel.com>, Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) sysdeps/s390/bitops.h
+	Fixed s390 compilation errors.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_time.c:
+   *) pth_high.c:
+	Clean up time API refs to use private inline/macros when 
+	possible, for pth_time() and pth_timeout().
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) debug.h:
+   *) futex.h:
+   *) gettid.h:
+   *) pth_p.h.in:
+   *) pth_sync.c:
+   *) pthread.c:
+   *) syscall.h:
+   *) sysdeps/generic/useldt.h:
+   *) sysdeps/i386/syscall.h:
+   *) sysdeps/i386/useldt.h:
+   *) sysdeps/ia64/syscall.h:
+   *) sysdeps/ia64/useldt.h:
+   *) sysdeps/powerpc/futex.h:
+   *) sysdeps/powerpc/syscall.h:
+   *) sysdeps/powerpc/useldt.h:
+   *) sysdeps/s390/futex.h:
+   *) sysdeps/s390/syscall.h:
+   *) sysdeps/s390/useldt.h:
+   *) useldt.h:
+	Move all architecture dependent code to sysdeps/<arch>. This 
+	should leave the base NGPT architecture independent. This is
+	also the structure used in glibc, which should make the NGPT
+	integration smoother.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_lib.c:
+	Change stack size for scheduler thread to be 64k.
+      [Saurabh Desai, <sdesai@us.ibm.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	Change the way the check for descr null is done to minimize impact on performance.	
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+   *) pth_tcb.c:
+   *) pth_native.c:
+   *) pth_fork.c:
+	Check for NULL instead MAP_FAILED when pth_malloc() fails.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) allocation.c:
+	Fix debug message.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) semaphore.h:
+   *) semaphore.c:
+	Remove the __sem_lock and its usage.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthreadtypes.h:
+	Remove the pth_qlock_st structure.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) configure.in:
+   *) aclocal.m4:
+	Added support for HP timing option.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) td_manager.c:
+	Removed unused function pthread_free.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) sysdeps/i386/hp-timing.h:
+	Added #define of HP_TIMING so everything is turned on properly.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_string.c:
+	Renamed MAX to STR_MAX to avoid conflict with HP timing code.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_time.c:
+	Correct second pth_time_div to be pth_time_mul, cut and paste error.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) get_clockfreq.c:
+   *) hp-timing.h:
+   *) pth.h.in:
+   *) pth_high.c:
+   *) pth_lib.c:
+   *) pth_p.h.in:
+   *) pth_sched.c:
+   *) pth_sync.c:
+   *) pth_time.c:
+   *) pthread.c:
+   *) sysdeps/generic/hp-timing.h:
+   *) sysdeps/i386/get_clockfreq.c:
+   *) sysdeps/i386/hp-timing.h:
+   *) sysdeps/ia64/get_clockfreq.c:
+   *) sysdeps/ia64/hp-timing.h:
+   *) sysdeps/powerpc/hp-timing.h:
+   *) sysdeps/s390/hp-timing.h:
+	Initial implementation of HP_TIMING, to rebase pth_time_t to
+	'long long' and use lighter weight time operations, and to 
+	use hardware TSC accesses for time stamps if the build arch 
+	supports it and ENABLE_HP_TIMING is defined.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) Makefile.in:
+	Added clean up new autoconf cache directory.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthreadtypes.h:
+	Correct definition of the pth_qlock_st to stay in sync with pth.h.in.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	pth_mutex_acquire and pth_mutex_release need to check for shutdown
+	in progress and descr null at the very beginning.  This was causing
+	a segfault at program termination.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) spinlock.h: 
+	Added simple spinlock/unlock (original way, without using futexes).
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Check the constant for max threads rather than making function call.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth.h.in: 
+   *) pth_sync.c: 
+	Added pth_shared_mutex_acquire() to handle shared-mutex.
+	Move a thread from wait queue to ready queue in mutex_release code.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_data.c: 
+	Remove the call to k_gettid().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) futex.h: 
+	Changed the count to 0 for initialization. (Do not use futex for spinlocks)
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) rfutex.h: 
+	Change in rfutex_st (changed the type field to 8 bits).
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c: 
+	Change in pth_st structure.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c: 
+	Initialize the pth_shared_area lock. Use spin_lock/spin_unlock directly.
+	Move threads from waiting queue to ready queue for broadcast case also. 
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c: 
+	Changed in the sigraised and thread's sigpending handling.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_p.h.in: 
+	Changed the sigpending related internal macros.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c: 
+	Changed the sigraised field from sigset_t to int. 
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c: 
+	Remove duplicate error checking and locks. Changed in sigpending macros.
+	Eliminate a sigprocmask() call, memcpy the previous mask.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) futex.h: 
+   *) spinlock.h: 
+	Added argument for howmany to wakeup.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.h.in:
+	Fix defnition of PTHREAD_RWLOCK_INITIALIZER to match the 
+	type of pthread_rwlock_t.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) useldt.h:
+	Adapt latest version from glibc 2.2.93 for NGPT usage.
+      [Bill Abt, <babt@us.ibm.com>, Dr. Uwe Girlich, <Uwe.Girlich@philosys.de>]
+
+   *) test_str01.c:
+   *) test_str03.c:
+	Correct warnings related to gcc 3.2 usage.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.h.in:
+	Correct declaration of errno_location to be consistent with glibc.
+      [Bill Abt, <babt@us.ibm.com>, Dr. Uwe Girlich, <Uwe.Girlich@philosys.de>]
+
+   *) pth_lib.c:
+   *) pth_tcb.c:
+	Forego activation of tsd entry points until after initialization.
+      [Bill Abt, <babt@us.ibm.com>, Dr. Uwe Girlich, <Uwe.Girlich@philosys.de>]
+
+   *) pthread.c:
+	Change attribute of pthread_initialize to "constructor".
+	Change type of pthread_initialize from static.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_p.h:
+	In the NATIVE_SELF case, removed the undefs of pth_get_native_descr and pth_get_current.
+	In the non NATIVE_SELF case, added defs of pth_get_native_descr and pth_get_current that
+	point to the new _ prefixed names.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+  
+   *) pth_lib.c:
+	Added volatile to declaration of pth_desc_t where needed.
+	In pth_kill(), re-coded a while loop to use an if and goto to workaround
+	an optimization problem in gcc 3.2.
+	Rename pth_get_native_descr to _pth_get_native_descr.
+	Rename pth_get_current to _pth_get_current.
+      [Bill Abt, <babt@us.ibm.com>, Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) ngpt.spec:
+	Corrected use of prefix to allow for redirection to another directory.
+      [Dave Howell, <david.p.howell@intel.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) futex.h:
+	Added include of string.h, needed by thread_db compiles.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) aclocal.m4:
+   *) configure.in:
+	Support both autoconf 2.13 and 2.53.
+      [Dr. Uwe Girlich, <Uwe.Girlich@philosys.de>, Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+      Add targets for new file pqueue.c, remove pth_pqueue.c.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) allocation.c:
+   *) allocation.h:
+      Implement per-order list of mchunks, so it can be used for fast
+      pointer-verification by cal_verify_pointer() [which in turn is
+      basic for thread_exists()].
+      Cleanup the definition of the maximum chunk size before we
+      handle it to the mmap allocation [CAL_CHUNK_ORDER_MAX,
+      everything depends on that now].
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) bitmap.h:
+      Abstraction of arbitrary-compile-time-size bitmaps. Used for
+      O(1) scheduling thread-lookup acceleration.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) debug.c:
+      Use spinlocks for atomic printf()s instead of pth_qlock_t.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) gettid.h:
+      Add syscall number for ia64.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) node.h:
+      Definitions of list nodes an operations on them; they are
+      thought to allow the same type of node to be used in priority
+      queues [struct pqueue_st] or normal queues [struct queue_st, not
+      used currently]. They include priority, a backpointer to the
+      list where inserted and optional consistency verification stuff.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pqueue.h:
+   *) pqueue.c:
+      Priority queues. Based on Ingo Molnar's O(1) (who in turn based
+      it on others) scheduler queues. Basically, we have a O(1) list
+      for each priority and a bitmap that has a one in the position of
+      a list that has elements ready. The lookup for the highest
+      priority thread ready-to-run is bounded to the size of the
+      bitmap. All the operations to add, remove, move, highest prio
+      lookup, etc are O(1). 
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) priorities.h:
+      One stop file to dissect and manage the priorities and
+      policies. Basically, provides methods to map from the
+      policy+priority space a user sees to a flat priority space. It
+      is kind of long because I want to make it flexible, but if no
+      flexibility is intended, probably a few lines can be cut. Being
+      all static inline stuff, it should optimize completely into
+      constants with no external references.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth.h.in:
+      Remove all traces of old priorities system. Add schedpolicy and
+      inheritsched support in thread attributes.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_attr.c:
+      Add schedpolicy and inheritsched support; change code because
+      now some fields are bitfields [for compression of the size of
+      some data structures].
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_cancel.c:
+   *) pth_debug.c:
+   *) pth_lib.c:
+   *) pth_fork.c:
+   *) pth_native.c:
+   *) pth_p.h.in:
+   *) pth_sched.c:
+   *) pth_sync.c:
+   *) pth_tcb.c:
+   *) pthread.c:
+      Add schedpolicy and inheritsched support; use new
+      pqueues. Remove dead code. Replace __builtin_expect() by
+      likely()/unlikely() [more readable]. Cleanup some variable name
+      [use 'thread' instead of 't' ... is clearer]. Remove
+      pth_thread_exists() - replaced by schedule.h:thread_exists()
+      much faster and scalable. Reimplement pth_yield(). Compressed
+      some boolean fields into bitfields. Mark an active TCB with a
+      magic number to ease thread_exists()' job. 
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_data.c:
+      Fix types.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_pqueue.c:
+      Deprecated and wiped out.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) queue.h:   
+   *) queue.c:
+      Code for normal queues that can use the node interface and
+      provide the same level of functionality as pqueues [execpt the
+      O(1) lookup]. Not currently used.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) schedule.h:
+      Helpers for scheduling related iterms. 
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) td_manager.c:
+   *) td_ta_thr_iter.c:
+   *) td_thr_get_info.c:
+      Usenew APIs, support schedpolicy and use pqueues.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+  *) Makefile.in:
+      Add a TAGS target ... and then call me lazy.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) allocation.c:
+   *) allocation.h:
+      Force check to verify we don't allocate before initializing the
+      allocator. Control it with
+      allocation.h:CAL_CHECK_INITIALIZATION. This is only intended for
+      debug or developer builds, not production builds. 
+      Initialize spinlocks, were possible, using function, not
+      initializer. Port to new spinlock API. 
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) compiler.h:
+      Homebrew versions, with no surprises.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) debug.c:
+      Use plain spinlock, not the heavy pth_qlock_t.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) debug.h:
+      Use gettid() and ngpt_SYSCALL() from gettid.h and syscall.h,
+      respectively. Remove unnecesary warning due to not using
+      syscall() anymore [ngpt_SYSCALL() goes straight to the kernel,
+      and thus, does not touch any mutex as glibc does; this way, we
+      can do much more things when debugging that were forbidden
+      before :)]. If a NULL location is set, don't print PIDs nor
+      TIDs. Cleanup stack_dump() to be a one-shot, one-liner, so the
+      output is more compact and not as subject to be interseeded with
+      other lines of output from other threads.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) futex.h:   
+   *) futex.h-*.h:
+   *) sys_futex.c:
+      Split up and cleanup of the futex code. Common code is now on
+      futex.h as inlines, arch specific code in futex-$ARCH.h. Nothing
+      touches errno. sys_ prefix removed. Only the sighandler remains
+      as a normal function in sys_futex.c.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) gettid.h:
+      Split off from pth_p.h to avoid dependency nightmares [and to
+      ease getting rid of it if sometime glibc supports gettid()].
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) list.h:
+      Add list_next() to avoid those pesky needs to look under the
+      hood.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth.h.in:
+      Define static initializers for some types that lacked it and
+      modified containing types accordingly to use them [main
+      offender: PTH_MUTEX_INIT]. Changed the pth_qlock_t type to use
+      spinlock_t [and thus futexes] and not just counts. Just a
+      wrapper now, sometime we should completely get rid of it, slowly
+      replacing it by spinlock_t.
+      Use 'struct rfutex_st' in place of now-defunct pth_futex_t. Add
+      decls for __pth_key_create() and add a locker argument to
+      pth_key_create(). 
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_data.c:
+      Create a non-locking version of __pth_key_create() - mistakes of
+      life, I replicated it. Will fix so the locking version calls the
+      non-locking. 
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_event.c:
+      Use non-locking __pth_key_create(), as we already locked
+      pth_key_lock. Replace some __builtin_expects() with
+      likely()/unlikely().
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_sched.c:
+   *) pth_mctx.c:
+      Use pth_qlock_st_INIT_UNLOCKED to initialize qlocks.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_p.h.in:
+      Define pth_qlock_init() ... hand crafted initialization in
+      considered bad for your health. Replace gettid() stuff with
+      #include "gettid.h"; replace likely/unlikely decls with #include
+      "compiler.h". Fix decl of k_tkill(), k_nanosleep(),
+      _pth_*_lock() from extern to static __inline__, because they are
+      static __inlines__. This way, non-optimized compilation works.
+      Added support for timeout [and stack dump + abort] in the qlocks
+      for debugging [just #define QLOCK_DEBUG to 1]. 
+      Use spinlocks as the basis for qlocks, so that at the end, they
+      use futexes. Main benefit: when there is a lot of contention, we
+      don't burn CPU cycles [effectively wasting them]. Main
+      disadvantage: we loose a wee bit of performance. Oh well, it is
+      worth it. 
+      Removed all the futex code that is i futex*.h now.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_string.c:
+      Fix printing of pointers via %p [they were being printed as
+      signed].
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_sync.c:
+      Add some instrumentation code and use the new futex and qlock
+      APIs. Provide proper locker argument to the lock functions.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pthread.c:
+      Initialize qlocks properly. Use pth_key_create() with new
+      interface; provide proper locker arguments to _pth_*_lock(). Add
+      some instrumentation [disabled by default].
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) rfutex.h:
+      Implementation of now deceased pth_futex_t. This is for robust
+      mutex implemetnation. Basically it wraps around the more basic
+      [completely basic] 'struct futex_st'.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) spinlock.h:
+      Use futex.h and the new futex interface for definining an
+      spinlock as a futex [so it does not burn CPU cycles when there
+      is too much contention - burn/overhead tradeoff controllable at
+      compile time using SPINLOCK_MAX_LOOPS]. Added spinlock_dump() to
+      peek at contents in instumentation code.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) syscall.h:
+   *) syscall-*.h:
+      Implementation of glibc's syscall(), but without error
+      handling. The error code returned is a < 0 (-4096, -1] errno
+      error code that the caller has to deal with [normally glibc sets
+      errno to it [positive] and returns -1 to the caller ... I always
+      thought this was kind of silly, but whoever thought of it back
+      at the 70s probably had a good reason for it]. Whatever, we do
+      this because syscall() needs to use a mutex to lock and then
+      call _h_errno_location(). PITA; thus this version, that does not
+      do it. Would be nice if glibc provided something like this.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) test_common.c:
+      Fix call to pth_key_create().
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) aclocal.m4:
+   *) configure.in:
+	Support both autoconf 2.13 and 2.53.
+      [Dr. Uwe Girlich, <Uwe.Girlich@philosys.de>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_native.c:
+	Fix warning for pth_wakeup_anative().
+	Added attribute "constructor" to pth_initialize_minimal().
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_fork.c
+	Allocate mctx_trampoline for first native in pth_fork_init().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c
+	Use new macros for sigpending handling on a thread.
+	Exit the process when last thread is exiting in pth_exit().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c
+	Use new macros for sigpending handling on a thread.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_p.h.in
+	Added new macros to handle pending signals on a thread.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c
+	Changed the sigpending field from sigset_t to int. 
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+    ____     ___
+   |___ \   / _ \
+     __) | | | | |
+    / __/ _| |_| |
+  _|_____(_)\___/_________________________________________________________
+
+  Changes between 2.0.2 and 2.0.3
+
+   *) test_bench.c:
+   *) configure.in:
+   *) Makefile.in:
+	Removed test_bench.c from test suite per request of Ulrich Drepper.
+	The file was received by the NGPT team without copyright but apparently
+	Ulrich owns it and expressed a desire for it to be removed.
+      [Bill Abt, <babt@us.ibm.com>, Ulrich Drepper, <drepper@redhat.com>]
+
+   *) pth_sched.c
+	If signal is pending on a thread and it's in wait_queue, wakeup and signal
+	that thread. Handle the PTH_EVENT_TIME_SIGS event for sleep(). 
+	Send signal from pth_sched_eventmanager_sighandler(), if it's not a first native.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c
+	Remove the failure code from pth_yield().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_event.c
+	Handle PTH_EVENT_TIME_SIGS.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c
+	Replaced PTH_EVENT_SIGS with PTH_EVENT_TIME_SIGS and wakeup first native
+	from pth_sleep_time(), if necessary. 	
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth.h.in:
+	Added PTH_EVENT_TIME_SIGS event.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) Makefile.in:
+   *) configure.in:
+   *) ngptinit.in:
+	Fix to build ngptinit with substitution for the executable 
+	pathname for ngptc, if an alternate prefix was specified
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_p.h.in:
+	Revisit default IPF syscall numbers after update of patch, 
+	all now match syscall numbers in 2.5 kernel for tkill/futex.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_lib.c:
+   *) pth_sched.c:
+   *) pth_tcb.c:
+	Handle suspension of a thread that is running on another native by
+	marking it for suspension so the scheduler can suspend it when it
+	it next re-enters it.  NOTE: This doesn't solve the problem completely
+	but does set the stage for a complete fix in the future.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sched.c:
+	Added (fdmax == -1) check with (m_to_n && dopoll) for return from 
+	pth_sched_eventmanager.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	Wakeup other native for broadcast of shared cond variables.
+	Initialize cond->cn_wakecnt in pth_cond_init(). 
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) libpthread.Versions:
+	Added __pthread_clock_gettime and __pthread_clock_settime to the
+	GLIBC_PRIVATE API list, as it shows up with linuxthreads.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.c:
+	Mutex is held when pthread_cond_wait/pthread_cond_timedwait is called.
+	No need to allocate new mutex, just check for valid mutex.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Replaced "descr->is_bounded" check with "descr->current->boundnative".
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	Wake up a native when releasing a mutex if current thread is bounded.
+	Check the owner of current mutex in pth_cond_await().
+	Move a thread from wait_queue to ready queue and wakeup native, if necessary
+        in pth_cond_notify().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	Add pth_wakeup_anative() to wakeup a native thread.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Bump the pth_max_native_threads count for SYSTEM scope thread creation.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) Makefile.in:
+	make uninstall was broken, fixed it!
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_p.h.in:
+	Added IPF system call trap numbers.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) allocation.h:
+	Include <asm/page.h> so it compiles clean in all environments.  Some
+	older SuSE environments on PPC need this.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_native.c:
+   *) pth_lib.c:
+	Move the initialization of the allocator from pth_initialize_minimal()
+	in pth_native.c to pth_init() in pth_lib.c.  pth_initialize_minimal must
+	only contain very, very safe calls that do not go down to glibc for
+	anything or very nasty things happen.
+	In the case of signal stack context switching (i.e. PowerPC), defer the
+	initialization of the trampoline for the primordial thread until pth_init()
+	to avoid having to initialize the allocator too early.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) config.param:
+	Remove the hard coded context switching method.  Allow configure to figure
+	it out based on the system.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) test_bench.c:
+	Some changes to accomodate older SuSE environments on PPC.
+      [Bill Abt, <babt@us.ibm.com>]
+
+  Changes between 2.0.1 and 2.0.2
+
+   *) Makefile.in:
+	Do an uninstall only if we've done a install and backup, otherwise
+	we have a tendency to whack LinuxThreads (hmm, not a bad idea).
+      [Bill Abt, <babt@us.ibm.com>, Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) allocation.c:
+   *) allocation.h:
+   *) bitops-ia32.h:
+   *) bitops-ia64.h:
+   *) bitops-ppc.h:
+   *) bitops-s390.h:
+   *) bitops.h:
+   *) debug.c:
+   *) debug.h:
+   *) list.h:
+   *) spinlock.h:
+	Correct copyright and code formatting.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) semaphore.c:
+	Fix problems related to the error path in the __new_sem_trywait
+	function.
+      [Bill Abt, <babt@us.ibm.com>, Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_manager.c:
+	td_handle_exit() now returns obviating the need for the noreturn
+	attribute.  Removed the attribute.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) allocation.c:
+	Fixed compiler warnings generated as a result of passing a size_t
+	instead of unsigned long to __fdebugmsg() in both mmap_allocate()
+	and mmap_deallocate().
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) allocation.h:
+	Fixed compiler warnings generated as a result of passing a size_t
+	instead of unsigned long to __fdebugmsg() in both mmap_allocate()
+	and mmap_deallocate().
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ngpt.spec:
+	Changed dependency on glibc to be > 2.2.4 rather than >=.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Fix to remove qualifier for sigprocmask for IPF, to get needed
+	symbols defined as they are for i386.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) allocation.c:
+   *) allocation.h:
+	Cleaned up printf string long cases to use proper format for 
+	long. Was found as part of IPF compile warning cleanup work.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) ngpt.spec:
+	Fixes for handling of glibc-2.2.5 internal symbol references,
+	to stop rpm install errors without '--nodeps' flags.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_mctx.c:
+	Fix to get ucontext field references to compile for IPF.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_p.h.in:
+	Fix to add new asm macros for IPF futex atomic operations.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_manager.c:
+        Remove uneeded code in td_handle_exit() and other cleanup.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_sync.c:
+	Re-arrange the robust-mutex code and fixed the bounded case.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	Added check for mutex passed being null in pth_mutex_init().
+      [Saurabh Desai, <sdesai@us.ibm.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_p.h.in:
+	Added a definition for __builtin_expect() for compilers older than 2.96.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) td_manager.c:
+	Added unused attribute to declaration pthread_free().
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Added pread64, __pread64, pwrite64, __pwrite64 for GLIBC_2.2.
+	This was in response to Marc-Christian Peterson's report that
+	these were missing for MySQL in ngpt-2.0.1.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_lib.c:
+   *) pth_native.c:
+   *) pth_tcb.c:
+   *) td_manager.c:
+   *) td_manager.h:
+	Change name of td_sync_handles to internal name, add strong symbol
+	for gdb to use when doing attach call __pthread_sync_thread_debug
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.h.in:
+   *) pthreadtypes.h:
+	Added pthread_rwlock_st and pthread_rwlockattr_st.
+      [Saurabh Desai, <sdesai@us.ibm.com>, Peter Wächtler, <pwaechtler@mac.com>]
+
+   *) pth_sync.c:
+   *) pthread.c:
+	Fixed the read-write locks and added support for process-shared rwlocks.
+      [Saurabh Desai, <sdesai@us.ibm.com>, Peter Wächtler, <pwaechtler@mac.com>]
+
+   *) pth.h.in:
+	Made changes in pth_rwlock_st and added pth_rwlock_destroy().
+      [Saurabh Desai, <sdesai@us.ibm.com>, Peter Wächtler, <pwaechtler@mac.com>]
+
+   *) pthread.c: 
+	Implement the pthread_mutex_consistent_np().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c: 
+	If mutex is already locked by the caller and it's not a recursive mutex,
+	return EDEADLK in pth_mutex_acquire().
+	When a condition is signaled, increment the cn_wakecnt in pth_cond_notify().
+	In pth_cond_await(), decrement the cn_wakecnt and remove the SIGNALED flag only
+	when it becomes zero.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_h.in: 
+	Added cn_wakecnt in pth_cond_st.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c: 
+	Call the cal_fork_init() in the child process.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) allocation.c: 
+   *) allocation.h: 
+	Added cal_fork_init() to re-initialize the chunk_list spinlocks.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c: 
+	Make the gcal as an intern variable.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c: 
+	Added support for robust-mutex in pthread_mutexattr_setrobust_np(),
+	pthread_mutexattr_getrobust_np() and pthread_mutex_init().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c: 
+	Added pth_find_shared_mutex() and support for the robust-mutex in
+	pth_mutex_acquire().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.h.in: 
+   *) pth_h.in: 
+	Added new state bits and errnos for robust-mutex support.
+	Added "robustness" field in pth_mutexattr_st.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c: 
+	Changed pth_testandset() to test_and_set().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) spinlock.h: 
+	Added spin_lock/spin_unlock.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_p_h.in: 
+	Added likely/unlikely macros. Removed the pth_testandset.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_debug.c: 
+	Changes for better debug support.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) pth_attr.c: 
+   *) pth_clean.c: 
+   *) pth_data.c: 
+   *) pth_event.c: 
+   *) pth_fork.c: 
+   *) pth_high.c: 
+   *) pth_lib.c: 
+   *) pth_msg.c: 
+   *) pth_native.c: 
+   *) pth_tcb.c: 
+   *) pthread.c: 
+   *) semaphore.c: 
+	Changed the munmap/pth_free to pth_free_mem.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) list.h: 
+	New file to implement better linked-list.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) debug.h: 
+   *) debug.c: 
+	New files to debug memory sub-allocator.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) bitops-ia32.h: 
+   *) bitops-ia64.h: 
+   *) bitops-ppc.h: 
+   *) bitops-s390.h: 
+   *) bitops.h: 
+	New header files to handle architecture specific inline functions.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) allocation.c:
+   *) allocation.h:
+  	New files for memory sub-allocator functions.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) Makefile.in:
+	Added new file (allocation.c) for memory sub-allocator.
+      [Iñaky Pérez-González <inaky.perez-gonzalez@intel.com>]
+
+   *) Makefile.in:
+	Fixed the install/uninstall path.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_cancel.c:
+   *) pth_high.c:
+   *) pth_lib.c:
+   *) pth_native.c:
+   *) pth_sched.c:
+   *) pth_tcb.c:
+   *) pthread.c:
+	Addition of __builtin_expect() macro insertions, for debug paths
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.c:
+	Moved the PTH_MUTEX_INTERNAL_LOCKED check from pthread_mutex_lock/unlock
+	to pth_mutex_acquire/release functions.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c:
+	Added mutex_owned field in pth_st.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	Added _pth_acquire and _pth_release for better optimization and call it
+	from mutex and cond variable functions.
+	Moved the PTH_MUTEX_INTERNAL_LOCKED check from pthread_mutex_lock/unlock
+	to pth_mutex_acquire/release functions.
+	Save the currently owned mutex in a new thread field, called mutex_owned.
+	Use internal ring only when more than one mutex is held by a thread.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Find the first un-bounded native to handle pth_main after switch-over.
+	Return from eventmanager if dopoll is true and if it's M:N case.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Changed the call to sigprocmask with pth_sc(sigprocmask).
+	Save the current signal mask in uc_sigmask for "mcsc" during thread creation.
+	Do not yield after thread creation for M:1 (REVERT previous change).
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	Replaced gettid() with k_gettid().
+      [Thorsten Kukuk <kukuk@suse.de>]
+
+   *) Makefile.in:
+	Correct problems with "make install" and "make uninstall".
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) config.param:
+	Turn on THREAD_DB support as the default.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) configure.in:
+	Add "test_bench" to test suite.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) libpthread.Versions:
+	Add sigwaitinfo as an overridden function.
+	Move libc_internal* and __pthread_kill_other_threads_np to
+	new version GLIBC_PRIVATE for compatibility with future
+	versions of glibc.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ngpt.spec:
+	Add requirement of glibc 2.2.4 or higher.
+	Turn on THREAD_DB support as the default.
+	Bump version.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_lib.c:
+	Add pth_yield() after thread creation if M:1.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_mctx.c:
+	Add initialization of signal mask for pth_mctx_set for mcsc method.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_native.c:
+	Fix error path when creating a new clone.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	Add attribute unused to pth_cond_cleanup_handler declaration.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Add weak reference back to __modify_ldt.
+	Add implementation of sigwaitinfo wrapper (fully emulated).
+	Add strong aliases for sigwaitinfo and sigprocmask.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.h.in:
+	Add additional form of "Linuxthreads" to keep autoconf program happy.
+      [Bill Abt, <babt@us.ibm.com>]
+      
+   *) test_bench.c:
+	Added new test program contributed via mailing list by Ingo Molnar.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_lib.c:
+   *) pth_native.c:
+   *) pth_p.h.in:
+   *) pth_sched.c:
+   *) pth_sync.c:
+   *) pthread.c:
+   *) td_manager.c:
+   *) td_manager.h:
+	Thread debugging fixes:
+	- Fix for test_str03 hang under the debugger, to catch main 
+	  thread migration case and skip it for debug. 
+	- Locking fix for native discovery for gdb changed to be per
+	  native.
+	- Removed stack bottom from handles and raised number of 
+	  handles for debug to 10240.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+  Changes between 2.0.0 and 2.0.1
+
+   *) pth_sync.c:
+	REVERT THIS FIX:
+	    Set the cn_state without checking cn_waiters in cond_notify, and 
+	    yield for M:1. 
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	Set the mx_mutex and mx_init after intializing a mutex.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Added yield in nanosleep wrapper.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	The mx_node field is not the first one in the pth_mutex_st, so count
+	proper offset to get a mutex from mutexring.
+	Re-arrange and cleanup the code in pth_mutex_acquire and pth_mutex_release.
+	Set the cn_state without checking cn_waiters in cond_notify, and yield for M:1. 
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Changes were made, when a thread state is WAITING and descriptor is first_native 
+        and is bounded, enqueue it in the pth_RQ list to run under M:N mode.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Remove the restriction on pth_main which was always bound to first_native.
+	When a first user-thread is created, switch the pth_main to run under newly
+	created native thread. 
+	Remove the check for pth_main in pth_join().
+	Replaced pth_max_native_threads check with pth_number_of_natives to select
+	which queue to look for.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_data.c:
+	Release the key_lock before calling the destructor routine, it may change
+	the native thread. Acquire the lock again.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_cancel.c:
+	Remove the check for pth_main.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+   *) pth_native.c:
+   *) pthread.c:
+   *) td_manager.c:
+   *) td_manager.h:
+	Change implementation of wakeup for clients of thread manager to 
+	use a mutex instead of restart signal. Fixes hang in test_str03.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) td_manager.c:
+	Implemented 'poke_natives' in __pthread_manager as way to get the
+	watchdog functionality available for debug runs.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_p.h.in:
+	Fix warnings regarding re-definition of macros that show up in gcc 2.95 (SuSE).
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_lib.c:
+   *) pth_sync.c:
+   *) pthread.c:
+   *) sys_futex.c:
+	Clean up warnings about unused functions that show up in gcc 2.95 (SuSE).
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) pthread.h.in:
+	Added mx_init_lock in pthread_mutex_st.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Re-arrange the mutex initialization code from various pthread_mutex_*
+ 	functions. Removed the init/settype call for recursive mutex.
+	Fixed a potential race-condition in pthread_mutex_lock/trylock by 
+	locking mx_init_lock.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Handle returning of stack pointer for primordial thread.
+	Handle returning of stack size for primordial thread.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_tcb.c:
+	Handle returning of stack pointer for primordial thread.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthreadtypes.h:
+	Correct type definitions of pthread_mutex_st and pthread_cond_st.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) td_manager.h:
+	Correct termination check macro.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_sched.c:
+   *) pth_native.c:
+   *) td_manager.h:
+	Updates to fix hang cases due to gdb not seeing new natives, 
+	other fixes for gdb integration.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.c:
+	Change all references to pth_cond_st to proper address the structure
+	due to the type change.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.h.in:
+	Change definition of pthread_cond_st
+	Change definition of INITIALIZERS for cond to conform to new definition.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth.h.in:
+	Added declaration of pth_spawn_cb() function.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_lib.c:
+	Remove THREAD_DB wrapper from pth_spawn_cb() function.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_native.c:
+	Added code to pth_initialize_minimal() that checks for the existence of the
+	sys_futex system call and aborts the program if it's not present.
+	Removed gettid/tkill wrappers and pth_no_patch flag.
+	Remove all references to tkill and gettid.
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) pth_lib.c:
+	Don't check for pth_no_patch when setting max native threads.
+	Remove all references to tkill and gettid.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_debug.c:
+   *) pth_fork.c:
+   *) pth_high.c:
+   *) pth_mctx.c:
+   *) pth_p.h.in:
+   *) pthread.c:
+   *) pthread.h.in:
+   *) pth_sched.c:
+	Remove all references to tkill and gettid.
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) pthread.c:
+   *) pthread.h.in:
+	Fixed a problem where the mx_mutex field could have invalid data in it and
+	cause a segfault.  Rename res1 to mx_init, a field whose placement will be
+	sure to be set to zero.  pthread_mutex_init() will set this field to 1 when
+	the mx_mutex field contains a valid value.
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) libpthread.Versions:
+   *) pth_syscall.c:
+	Added versioned symbols for poll and __poll for glibc compatibility.
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) pthread.c:
+   *) pthread.h.in:
+	Added new pthread_getsp_np() to return the stacktop of a given thread.	
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) pth_lib.c:
+   *) pth.h.in:
+	Added new pth_getsp() to return the stacktop of a given thread.	
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) pthread.c:
+	If current thread calls pthread_mutex_destroy, unlock and free the mutex.
+	Do not initialize mutex from the pthread_mutex_unlock().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_p.h.in:
+	Remove warning from k_gettid.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Call pth_fcntl only for M:1.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+ 
+   *) config.sub:
+	Added support for ppc64.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) libpthread.Versions:
+   *) pth_lib.c:
+   *) pth_native.c:
+   *) pth_tcb.c:
+   *) td_manager.c:
+   *) td_manager.h:
+	Updates for gdb/libthread_db thread debugging.
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pthread.c:
+	In pthread_mutex_init(), after doing the call to pth_mutex_init, set
+	the mutex type.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) config.param:
+	Change default method for context switch to use get/set/make context.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_lib.c:
+	Added functionality for pth_getcontext_np() for new context.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	Change all references to pth_mutex_t to proper address the structure
+	due to the type change.
+	Handle recursive initializers when used with the constant.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.h.in:
+	Change definition of pthread_mutex_st
+	Change definition of INITIALIZERS for mutex to conform to new definition.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_fork.c:
+	Change from using _pth_mutex_init to using new signature pth_mutex_init.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth.h.in:
+	Change PTH_MUTEX_INIT to accomodate new member to mutex structure.
+	Changed typedef of pth_mutexattr_t to not be a pointer typedef.
+	Added mx_type member to mutex structure.
+	Removed the pth_mutex_init macros, no longer needed.
+	Change pth_mutex_init signature to pass the mutex attributes. 
+      [Bill Abt, <babt@us.ibm.com>]
+	
+   *) pthread.c:
+	Change all references to pth_mutexattr_t to proper address the structure
+	due to the type change.
+	Change all pth_mutex_init calls to pass either the attr structure or NULL.
+      [Bill Abt, <babt@us.ibm.com>]
+	
+   *) pth_sync.c:
+	Change signature of pth_mutex_init to accept mutex attributes.
+	Determine (in pth_mutex_init) the attributes of the mutex.
+	In pth_mutex_acquire, check to see if the recursive attribute is set and only
+	allow recursive acquires if so.
+	Change all pth_mutex_init calls to pass either the attr structure or NULL.
+      [Bill Abt, <babt@us.ibm.com>]
+
+
+  Changes between 1.9.90 (2.0 RC1) and 2.0.0
+
+   *) ngpt.spec:
+   *) config.param:
+   *) configure.in:
+	Removed the enabling of thread_db for the build.  The gdb patch
+	isn't quite ready and without it, enabling our version of libthread_db
+	would disable debugging.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_data.c:
+	Remove the "ifdef THREAD_DB" qualifier for the definition of pth_keytab_st
+	since that is needed for a build without THREAD_DB enabled.
+      [Bill Abt, <babt@us.ibm.com>]
+
+
+     _    ___
+    / |  / _ \
+    | | | (_) |
+    | |_ \__, |
+  __|_(_)__/_/____________________________________________________________
+
+  Changes between 1.9.3 and 1.9.90 (2.0 RC1)
+
+   *) pthread.c:
+   *) pthread.h.in:
+	Added pthread_mutexattr_setrobust_np, pthread_mutexattr_getrobust_np,
+	pthread_mutex_consistent_np stubs.  Note: they are not functional yet
+	and return ENOSYS if called.
+      [Jack F Vogel, <jfv@us.ibm.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) td_manager.c:
+	Change __pthread_doing_debug initializer from 1 to 0.  In other words,
+	don't default to doing debug.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) td_manager.c:
+   *) td_manager.h:
+	New modules for ngpt runtime support for gdb/libthread_db.
+      [Dave Howell, <david.p.howell@intel.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+   *) aclocal.m4:
+   *) config.param:
+   *) configure.in:
+   *) ngpt.spec:
+   *) pth.h.in:
+   *) pth_cancel.c:
+   *) pth_data.c:
+   *) pth_debug.c:
+   *) pth_fork.c:
+   *) pth_high.c:
+   *) pth_lib.c:
+   *) pth_native.c:
+   *) pth_p.h.in:
+   *) pth_sched.c:
+   *) pth_tcb.c:
+   *) pthread.c:
+   *) sigrt.c:
+	Changes for ngpt runtime support for gdb/libthread_db.
+	Note that these changes require an upated gdb to work.
+      [Dave Howell, <david.p.howell@intel.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	Added new lock to shared area to protect the index.
+	pth_alloc_xxxx_shared now grab the new lock before doing anything.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ngptc.c:
+	Added new lock to shared area to protect the index.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+	Updated dependencies.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) shm_open.c:
+	Handle builtin_expect for version of gcc that don't have support
+	for it.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) compiler.h:
+	Removed header.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	Moved the init_lock to pth_init_lock and use in pth_mutex_init.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c:
+   *) pth_sched.c:
+	Declare and re-initialize pth_init_lock from child process to avoid
+	dead-lock.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	Replaced the call to poll() with select() in pth_recvfrom_ev and
+	pth_sendto_ev for performance reason.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+  Changes between 1.9.2 and 1.9.3
+   
+   *) sysconf.c:
+	Removed reference and use of _dl_clktck since this is not supported
+	in later versions of glibc.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth.h.in:
+	Increase the size of PTH_MAX_NATIVE_THREADS to the much more reasonable
+	(at least for bound threads) value of 128.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+	Add the running of ngptc before running the test program during the
+	"make test" option.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) sys_futex.c:
+	The sys_futex_acquire now returns 0 on success and fd (> 0) on wait.
+	Call sys_futex(..FUTEX_FD...) without SIGIO, no need to register 
+	signalhandler anymore, it waits synchronously.
+	Same case for the sys_futex_add_waiter().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	For shared-mutex/cond, wait for futex using EVENT_FD event. 
+	The sys_futex_acquire() now returns new fd to wait on. After wakeup,
+	close this fd. Same is true for for bounded-thread case.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	No special handling is required for shared-mutex/cond in pth_sched_eventmgr,
+	undo previous change.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	Remove the is_sigwakeup from pth_descr_st, not needed anymore.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c:
+   *) pth_lib.c:
+	make pth_atfork_list[] an intern and initialize it.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth.h.in:
+	Moved pth_atfork_st structure from pth_fork.c to here.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) sys_futex.c:
+	In the signal handler, we now close the fd (returned from a futex await call)
+	that is passed to us in the siginfo structure associated with the SIGIO.
+	Changed the call to sys_futex() in the await case to pass FUTEX_FD instead of
+	FUTEX_AWAIT and also to pass the fact that we want a SIGIO sent to indicate
+	that the futex was released.
+	Since /dev/futex and hence the fd member of pth_futex_t is no longer needed,
+	removed all references to both in all functions.
+	In sys_futex_acquire(), check the return code from the sys_futex_await() call
+	to ensure that we got a proper fd back.  Note, we don't have to keep track of
+	this fd because it will be returned to us later for closing when the SIGIO is
+	sent upon futex release.
+	Changed the signature of sys_futex_add_waiter() to return a return code.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth.h.in:
+	Corrected the definition of PTH_MUTEX_INIT and PTH_COND_INIT to reflect
+	the fact that pth_futex_st no longer has to keep track of the fd for
+	the futex device.
+	Removed the fd member from pth_futex_st since we no longer have to keep
+	track of it since it no longer exists.
+	Changed the signature of sys_futex_add_waiters so that it now returns a
+	return code indicating whether or not the call was successful.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ngptinit:
+	Remove the portion of the script that creates /dev/futex.  With the
+	new futex patch, there is no /dev/futex.  Life is good.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) futex.h:
+	FUTEX_AWAIT has become FUTEX_FD.  Don't ask me why ;-)
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_fork.c:
+	Fix compilation error, this time the right way!!!
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_fork.c:
+	Fix compilation error, pth_mutex_init takes pointer to not the 
+	address of a pth_mutex_t.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) sys_futex.c:
+	Wakeup the bounded natives from the sys_futex_sighandler, if needed.
+	Pass INT_MAX in sys_futex() for FUTEX_WAKE to wakeup all processes.
+	Remove the sys_futex_acquire in sys_futex_add_waiter() and directly
+	call sys_futex_await().
+	Issue sys_futex() to wakeup 1 or all waiters from notity/notify_all.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	In pthread_cond_init(), call pth_alloc_shared_cond to allocate cond 
+	variable from shared memory area.
+	In pthread_cond_destroy(), call pth_cond_destroy for shared area cleanup.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	In pth_mutex_acquire:
+	  check the return code from sys_futex_acquire and take action accordingly.
+	  do not add a thread in mutex->waitlist for shared-mutexes.
+	  check for need_futex before acquiring futex to avoid duplicate calls.
+	  when event wakes up, go back and acquire futex and mutex if available.
+	  similar changes for bounded native case.
+	  remove the "restart" label and break the loop for mutex acquire.
+	Added pth_cond_destroy() to clean up the shared area for cond variable.
+	Do not add a thread in cond->waitlist for shared-cond variables.   
+	In pth_cond_notify:
+	  for shared-cond, if broadcast is set, call sys_futex_notify_all to wakeup 
+	  all waiters, else call sys_futex_notify to wakeup atleast 1 waiter.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Changes made for shared-mutex/cond handling in pth_sched_eventmgr:
+	If it's running on first_native and futex_sighandler has been called,
+	for mutex, wakeup the wait and re-aquire futex.
+	for cond, if state is not true, wait again for futex.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	Added is_sigwakeup in pth_descr_st structure.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	If pth_initialize_shared() fails, abort from the pth_init().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c:
+	If native is not bounded, then only switch to first native in pth_fork().
+	Re-initialize the file locks for child process.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth.h.in:
+	Added pth_cond_destroy().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	sys_futex_xxx() functions can change errno.  Calls to these routines
+	need to wrapped in the errno_shield() macro.
+      [Saurabh Desai, <sdesai@us.ibm.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_p.h.in:
+	Add s390 support.
+      [Heiko Carstens, <Heiko.Carstens@de.ibm.com>]
+
+   *) pth.h.in:
+	Reduce the size of PTH_MAX_NATIVE_THREADS to the much more reasonable
+	value of 64.
+      [Bill Abt, <babt@us.ibm.com>, David Howell, <david.p.howell@intel.com>]
+
+   *) pth_sync.c:
+	Correct the way we determine if the a futex has already been acquired
+	to avoid a race condition.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_debug.c:
+      pth_errno.c:
+      pth_high.c:
+      pth_lib.c:
+      pth_tcb.c:
+	Fix to ensure that errno is maintained properly on a per thread basis.
+      [Arend-jan Wytzes, <aj@godfather.wise-guys.nl>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	In pth_mutex_acquire(), there was a problem if the futex was acquired just
+	before doing the wait.  It would re-acquire the futex twice, resulting (on
+	the second acquire attempt) in a wait which is not desirable behavior.  This
+	fixes that problems so that the futex is only acquired once.
+	Also, in pth_mutex_acquire(), when dropping out of a wait, the futex was not
+	being acquired resulting in the possibility of multiple holders of the same
+	shared mutex, one holding the futex, one not but both holding the mutex, again
+	very undesirable behavior.  This is also fixed.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) test_str03c:
+	Fixed a few problems that prevented the app from being run consecutively
+	without re-running test_str03c.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	In pth_cond_await, only do the sys_futex_notify_all if there are
+	no more waiters.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ngpt.spec:
+	Added running of ngptinit as a post install task.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+	Updated dependencies.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) compiler.h:
+	Added due to the fact that some distros don't provide this file
+	in /usr/include/linux.  Provide compatible interface for older
+	versions of gcc.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) shm_open.c:
+	Changed to use local version of compiler.h.
+      [Bill Abt, <babt@us.ibm.com>]
+
+  Changes between 1.9.1 and 1.9.2
+
+   *) sys_futex.c:
+	Changed signature of sys_futex_init to change mutex to void.
+	Added implementation of sys_futex_add_waiter, sys_futex_notify and 
+	sys_futex_notify_all for use by condition variables.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) semaphore.c:
+	If a shared semaphore, make sure we using shared mutexes and conditionals.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	Changed PTH_MAX_SHARED_MUTEXES to PTH_MAX_SHARED_OBJECTS.
+	Added definitions of shared types.
+	Changed pth_shared_area_st to have a union that includes mutexes
+	and conditionals.
+	Added setting to pth_futex_t.type member.
+	Added pth_alloc_shared_cond to allocate a shared conditional.
+	Changed signature of pth_cond_init to take a pshared flag.
+	Changed pth_cond_init to initialize the contained futex.
+	Changed pth_cond_await to recognize and process shared conditionals.
+	Changed pth_cond_broadcast to recognize and process shared conditionals.
+	Changed pth_cond_notify to recognize and process shared conditionals.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	Added implementation of PTHREAD_PROCESS_SHARED for conditionals:
+	    Changed pthread_condattr_getpshared.
+	    Changed pthread_condattr_setpshared.
+	    Changed pthread_cond_init.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth.h.in:
+	Fix PTH_MUTEX_INIT to reflect proper initialization of structure.
+	Fix PTH_COND_INIT to reflect proper initialization of structure.
+	Added "type" to pth_futex_st.
+	Change "parent" to void * to accept mutex or conditional.
+	Added cn_index and cn_shared member to pth_cond_st.
+	Changed signature of pth_cond_init and added macros for convienence.
+	Changed signature of sys_futex_init to change mutex to void.
+	Added declaration of sys_futex_add_waiter, sys_futex_notify and 
+	sys_futex_notify_all.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ngptc.c:
+	Changed PTH_MAX_SHARED_MUTEXES to PTH_MAX_SHARED_OBJECTS.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+   *) pthread.h.in:
+	Added "const" in *_getpshared routines.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Add a thread in first native's wait queue, if the exit_count is zero. 
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	If pth_main is not bounded to first native in pth_join, make it bound.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) useldt.h:
+   *) sysconf.c:
+   *) shm_open.c:
+   *) shm_unlink.c:
+   *) getlogin.c:
+   *) sigrt.c:
+	These files all originated in glibc are should've been copyright exclusively
+	to the FSF.  The changes made were either bug fixes or deletions.
+      [Ulrich Drepper, <drepper@redhat.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) shm_open.c:
+	The __builtin_expect function is not available in compilers earlier than gcc
+	version 2.96.  Added include of linux/compiler.h to compensate for the missing
+	builtin function.
+      [Peter Wächtler, <pwaechtler@loewe-komp.de>, Bill Abt, <babt@us.ibm.com>]
+   
+   *) test_str03.c:
+	Fixed allocation of share_area structure to the proper size.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Save native thread in waited_native, where a user thread is waiting on.
+	When a user thread is dead, check any thread is waiting for join and
+	move it from wait-queue to ready-queue and run immediately.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Save the current thread in joined_thread in pth_join().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c:
+	Added joined_thread and waited_native fields in the pth_st structure.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	Remove the select syscall for smaller timeouts from pth_select_ev,
+	this may block native thread forever.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+  Changes between 1.9.0 and 1.9.1
+   
+   *) test_str03.c:
+	Fixed parsing of arguments so that -s switch is checked for after
+	the arguments.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) shm_open.c:
+   *) shm_unlink.c:
+	Change the value of SHMDIR to be "/dev/shm" as defined by POSIX.
+      [Bill Abt, <babt@us.ibm.com>, Saurabh Desai, <sdesai@us.ibm.com>] 
+
+   *) Makefile.in:
+	Remove the .done-backup when doing a uninstall.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) shm_open.c:
+   *) shm_unlink.c:
+	Code cleanup (use NGPT standards) and copyright adjustment.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+   *) ngptc.c:
+	Use shm_open/shm_unlink instead of open/unlink to plug security hole.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) shm_open.c:
+   *) shm_unlink.c:
+	Swiped from glibc and modified for use with NGPT to avoid bringing in
+	librt.so.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+	Added shm_open.c and shm_unlink to build.
+	Updated depends.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.h.in:
+	Define _POSIX_THREAD_PROCESS_SHARED to indicate we support process shared
+	synchronization objects.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	If pth_main is going to wait for mutex/cond, set the is_bounded to TRUE
+	for the first_native, so the scheduler can take proper action.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+ 
+   *) pth_sched.c:
+        If a native is not running anymore, free the resources and exit.
+        When a first native is marked with is_bounded, pth_main is about to wait
+        for mutex/cond. In that case, remove the boundnative and select other than
+        first native wait_queue.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+ 
+   *) pth_event.c:
+        When event resource allocation fails, yield, so exit can complete.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+ 
+   *) pth_native.c:
+	Added do_yield in pth_descr_st.
+        If a native is already freed and exited, return from pth_cleanup_native().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+ 
+   *) pth_sched.c:
+        If do_yield is set on native, yield in the scheduler (visit the eventmgr).
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c:
+	Remove the pth_cleanup_popall from pth_fork_tcb_free().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_clean.c:
+   *) pth_tcb.c:
+	Use PTH_CLEANUP_COUNT.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Call pth_cancel_point() with TRUE flag.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_cancel.c:
+	Pass a flag in pth_cancel_point to set the do_yield on native.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth.h.in:
+	Added PTH_CLEANUP_COUNT and change in pth_cancel_point.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Fix pthread scheduling APIs to return proper values rather than ENOSYS.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sched.c:
+	If max native threads is equal to 1, also wait in the scheduler.  This
+	will avoid thread starvation on UP machines.
+      [Bill Abt, <babt@us.ibm.com>]
+
+  Changes between 1.2.2 and 1.9.0
+
+   *) ngptc.c:
+	Ensure that file permissions are set properly.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) sys_futex.c:
+	Changed NATIVE_SELF to pth_get_native_descr().
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+   *) ngpt.spec:
+	Added ngptinit.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ngptinit:
+	Added, new script to create /dev/futex and initialize shared mem.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+	Added ngptc.c and test_str03c.c utilities for creating shared mem.
+	Updated in general to handle maintenance of new utilites.
+	Regenerated dependencies.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) futex.h:
+	Added to the build temporarily until futex.h patch is in the 2.4
+	kernel includes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ngpt.spec:
+	Added ngptc.c utility for creating shared mem.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ngptc.c:
+	Added as utility function to be run at boot time (or any other
+	time) as needed to initialize NGPT shared memory.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth.h.in:
+	Added pth_futex_st/_t definition.
+	Update pth_mutex_st to accomodated shared mutexes.
+	Updated all relevant definitions to accomodate these changes.
+	Change signature of pth_mutex_init to accomodate share mutexes.
+	Added declaration of sys_futex function for futex handling.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_lib.c:
+	During initialization, added call to initialize shared memory.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_p.h.in:
+	Added include of new futex.h.
+	Added definition of new inline functions for futex handling.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	Added include of sys/stat.h for file permission macros.
+	Added declaration of shared memory areas and related defines.
+	Added pth_initialize_shared() to initialize shared memory.
+	Added pth_alloc_shared_mutex to allocate a shared mutex.
+	Change pth_mutex_init to _pth_mutex_init and adapted to initialize
+	shared mutexes.
+	Added futex handling to pth_mutex_acquire() and pth_mutex_release()
+	for the handling of shared mutexes.
+	Added pth_mutex_destroy function for use in destroying shared
+	mutexes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	Account for pshared flag in pthread_mutex_init function.
+	In pthread_mutex_destroy function, properly destroy shared mutexes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) semaphore.c:
+	Account for pshared flag in __new_sem_init() function.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) sys_futex.c:
+	Low level functions for handling futexes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) test_str03.c:
+	Added -s option and code for exercising shared mutexes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) test_str03c.c:
+	New program to create shared memory when using the -s
+	option of test_str03.
+      [Bill Abt, <babt@us.ibm.com>]
+
+
+     _   ____
+    / | |___ \
+    | |   __) |
+    | |_ / __/
+  __|_(_)_____|___________________________________________________________
+
+  Changes between 1.2.1 and 1.2.2
+
+   *) pth_tcb.c:
+	Check for null from the native descriptor call and get the tid
+	manually if null is returned (pth_tcb_free).
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Set descr->current in pth_tcb_free if it's the current, exit_count > 0
+	and the descr is equal to the first native descr.
+      [Bill Abt, <babt@us.ibm.com>, Saurabh Desai, <sdesai@us.ibm.com>] 
+
+   *) pth_data.c:
+	Explicitly pass the tid in lock call inside pth_key_destroydata.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_lib.c:
+	The last tcb must be freed contrary to earlier fix or we'll have
+	a leak.
+      [Bill Abt, <babt@us.ibm.com>, Saurabh Desai, <sdesai@us.ibm.com>] 
+
+   *) pth_native.c:
+	Only set the current native_descr to NULL if the slot is not 0.
+      [Bill Abt, <babt@us.ibm.com>, Saurabh Desai, <sdesai@us.ibm.com>] 
+   
+   *) pth_native.c:
+	During pth_cleanup_native(), there can be no thread running currently
+	on this native except the scheduler.  Setting current in the native_descr
+	to NULL prevents a problem in cases where the LDT's are not used.
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) pth_lib.c:
+	Remove tcb free at the end of pth_kill, no longer needed.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_native.c:
+	Removed errant fprintf from pth_new_scheduler().
+      [Bill Abt, <babt@us.ibm.com>, Saurabh Desai, <sdesai@us.ibm.com>] 
+   
+   *) pth_sync.c:
+	Release the mutex->mx_lock and cond->cn_lock before native wakeup for
+	the bounded-thread.
+      [Saurabh Desai, <sdesai@us.ibm.com>] 
+
+   *) pthread.c:
+	Call pth_cleanup_push/pop instead using "_buffer" data for cleanup_push,
+	cleanup_pop and related routines. (Undo the previous change!)
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_clean.c:
+	Use internal buffer for first 5 cleanup structs allocation.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+	
+   *) pth_tcb.c:
+	Added cleanup_buf and cleanup_count in the pth_st to allocate cleanup struct 
+	from internal buffer.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) semaphore.c:
+	Added error check to __new_sem_init() function to catch malloc failures.
+      [Nicholas Black, <dank@trellisinc.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) semaphore.c:
+	Fixed problem in __new_sem_destroy() that was referencing memory previously freed.
+      [Marijn Cos, <marijn@mad.scientist.com>, Bill Abt, <babt@us.ibm.com>]
+      
+   *) pth_lib.c:
+   *) pth_tcb.c:
+	Added "joined_count" in the pth_st to keep track of multiple joined count
+	on a same thread. This is needed to avoid race condition.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	If pth_main is releasing mutex, call pth_yield() to wakeup others.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Acquire mutex/cond locks in pthread_mutex_destroy and pthread_cond_destroy
+	and return if resource is busy.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.h.in:
+	Added reference to "LinuxThreads".  Autoconf based app configurations grep
+	for LinuxThreads in the pthread.h header file.
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) pth.h.in:
+	Added PTH_MUTEX_INTERNAL_LOCKED.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Set the PTH_MUTEX_INTERNAL_LOCKED to mutex->mx_state in pth_mutex_init,
+	if it comes from glibc during initialization.
+	Check the PTH_MUTEX_INTERNAL_LOCKED in pth_mutex_lock, pth_mutex_trylock
+	and pth_mutex_unlock for internal mutexes.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c:
+	Bound a thread to first native before calling fork() to avoid resource
+	limitation problem. Fixed potential memory leaks.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	Eliminate the fcntl() call from pth_sendmsg_ev and pth_sendto_ev, instead
+	use the MSG_DONTWAIT flag.
+	Re-arrange the call to pth_fdmode() in pth_recvmsg_ev and pth_recvfrom_ev.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Check for same native, when handling PTH_EVENT_FD type events.
+	Move the read() to clear pipe after select().
+	Added a check before waking up the "joined_native", when a thread exit.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	In pth_mutex_acquire and pth_cond_await, wait in select if thread is bounded
+	to a native thread.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	Added new parameter to pth_new_native().
+	Wait until the thread control is back to scheduler in the pth_cleanup_native.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Pass the thread to the pth_new_native() for bounded-thread.
+	Fixed a race condition in pth_join().
+	Change the fcntl to __libc_fcntl.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_syscall.c:
+	If thread is bounded, call connect/accept syscall directly.
+	Do not make a thread bounded in poll/select wrapper routine.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+   *) pth_p.h.in:
+	Remove all locking functions and k_XXXX functions to the pth_p.h.in file
+	and made them inline.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+	Changed where pth_native.c is called out during header file generation.
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) pth_lib.c:
+	If NATIVE_SELF is defined, ifdef out the pth_get_current and the
+	pth_get_native_descr functions.  They are replaced by ldt-based
+	macros.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_p.h.in:
+	If NATIVE_SELF is defined, redefine the use of pth_get_current and
+	pth_get_native_descr to take advantage of LDT usage.
+	Move the NATIVE_SELF based macros to after the include of the
+	useldt.h header file.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) useldt.h:
+	Removed redefinitions of pth_get_current and pth_get_native_descr.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	Have pthread_self take advantage of NATIVE_SELF if available.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) useldt.h:
+	If NATIVE_SELF is defined, redefine the use of pth_get_current and
+	pth_get_native_descr to take advantage of LDT usage.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth.h.in:
+   *) pth_lib.c:
+	Change default MAX stack to 8MB.
+      [Bill Abt, <babt@us.ibm.com>]
+
+  Changes between 1.2.0 and 1.2.1
+
+   *) pth_native.c:
+	When cleaning up native threads, ensure that if the key lock owner is the current
+	process that the lock is released.
+      [Saurabh Desai, <sdesai@us.ibm.com>, Bill Abt, <babt@us.ibm.com>]
+      
+   *) pth_tcb.c:
+	Don't do cleanups in pth_tcb_free(), they've already been completed.
+      [Saurabh Desai, <sdesai@us.ibm.com>, Bill Abt, <babt@us.ibm.com>]
+      
+   *) pthread.h.in:
+   *) pthread.c:
+	Added declaration and void implementation for the pthread_kill_other_threads_np
+	LinuxThreads api.  It is for link time resolution only and does nothing.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	Do not register the cleanup handler in the pth_cond_await, check
+	the cancelreq flag and call pth_cancel_point(), if it's true.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Remove the pthread_cleanup_push/pop functions, now they are macros.
+	Changes made in the _pthread_cleanup_push, _pthread_cleanup_push_defer,
+	_pthread_cleanup_pop, and _pthread_cleanup_pop_restore, not to call
+	the pth_cleanup_push/pop. It uses the "_buffer" instead malloc'ed data.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.h.in:
+	Added _pthread_cleanup_buffer structure, same as pth_cleanup_t.
+	Convert the pthread_cleanup_push/pop into macros.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_clean.c:
+	No need to free the cleanup handler from the pth_cleanup_popall().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	Do not acquire lock for pth_first_native before it's write for bound thread.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	Eliminate cleanup_push/pop for each pth_cond_await (do only for cancellation).
+	Do not call pth_yield() for cond_notify under m:n mode.
+	Check for boundnative instead is_bounded in pth_cond_notify for broadcast.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_event.c:
+	Do not call pth_cancel_point() for EVENT_COND typed event.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthreadtypes.h:
+	Sync'd up pth_qlock_st with version in pth.h.in.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	Added strong alias for __h_errno_location mapping to __errno_location.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) configure.in:
+   *) configure:
+	Change PTHREAD_STACK_MIN back to 16.  glibc requires this to
+	be the minimum.
+	TODO: Investigate why.
+      [Bill Abt, <babt@us.ibm.com>, Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) test_pthread.c:
+	Added an option to create bounded threads.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Change in pthread_attr_setscope().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c:
+	Added joined_thread and mutex_cond_wait in the pth_st.
+	When a bound thread is freed, mark the native for re-use.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_syscall.c:
+	If a thread is bound, don't wait in library (for all syscalls)
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	Added a thread in the waitlist of mutex or cond variable, if its
+	waiting for resources. 
+	Bound thread support related changes in pth_mutex_acquire, 
+	pth_mutex_release, pth_cond_await and pth_cond_notify.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Walk thru' the threads_queue list in scheduler_drop to free them.
+	Bound thread support related changes in pth_scheduler and
+	pth_sched_eventmanager.
+	If ready queue count is 1, then only poll in the pth_sched_eventmanager.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	Added is_bounded, bounded_thread, new_queue, ready_queue and
+	deleted sigblock and sigcatch elements from the pth_descr_st.
+	Check for the MAX_NATIVE_THREADS in the pth_alloc_natives.
+	Re-use the native and check for exit in the pth_new_native.
+	Release any global locks held by the dead native thread.
+	Check the Ready queue and New queue counts in the watchdog routine.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	The pth_main is now bound to the first native thread.
+	Add an extra native to compensate the first native....
+	Bound thread support related changes in pth_spawn, pth_join,
+	pth_bindtonative, pth_suspend, pth_resume, pth_yield.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	Added pth_fcntl() to handle the F_SETLKW command.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c:
+	Bound thread support related changes.
+	Walk thru' the threads_queue list to free all threads.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_cancel.c:
+	Bound thread support related changes in pth_cancel().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth.h.in:
+	Change PTH_MAX_SCHEDULERS to 512 from 1024.
+	Added waitlist entry in mutex_st and cond_st structures.
+	Rename the pth_all_threads_list_st to pth_list_st.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_p.h.in:
+	Added pth_first_native and native_is_group_leader macros.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) configure.in:
+   *) configure:
+	Change PTHREAD_STACK_MIN to 4 from 16.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) useldt.h:
+	Adjusted copyright, licensing.
+	Corrected struct definitions in commented out code.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Added lseek64 wrapper.
+      [Dave Howell, <david.p.howell@intel.com>]
+      
+   *) pth_lib.c:
+	Fix pth_spawn to use pth_default_stacksize rather than 64.
+      [Bill Abt, <babt@us.ibm.com>, Dave Howell, <david.p.howell@intel.com>]
+      
+   *) pth.h.in:
+   *) pth_high.c:
+   *) libpthread.Versions:
+	Added lseek64, pth_write64 and pth_read64. 
+      [Dave Howell, <david.p.howell@intel.com>]
+      
+   *) pth_lib.c:
+	Account for ARCH_MAX_STACK_SIZE if defined.
+      [Bill Abt, <babt@us.ibm.com>, Dave Howell, <david.p.howell@intel.com>]
+      
+   *) configure.in:
+	Change PTHREAD_STACK_MIN to 4k rather than 16k.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_lib.c:
+	Change pth_spawn() to use 64k stack as the default.
+      [Bill Abt, <babt@us.ibm.com>, Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	Create clones with a minimal stack since all threads including
+	the scheduler(s) have their own stacks.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_attr.c
+   *) pth_fork.c
+   *) pth_lib.c
+   *) pth_native.c
+	Added shell configuration variable DEFAULTTHREADSTACKSIZE
+	to set the default thread stack size for thread creation
+      [Dave Howell, <david.p.howell@intel.com>]
+
+   *) pth_sched.c:
+	Fix for seg fault for EVENT_TIME and EVENT_FUNC in eventmanager.
+	Change sigaction calls to use __libc_sigaction in eventmanager.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Fix for simultaneous exit() in pth_kill.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+	
+   *) .gdbinit:
+	Change to mask SIG33 instead of SIGUSR1.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth.h.in:
+	Align qlocks on 16 byte boundary for performance.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_fork.c:
+   *) pth_high.c:
+   *) pth_native.c:
+   *) pth_p.h.in:
+   *) pthread.c:
+	LDT usage changes for performance.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_lib.c:
+	LDT usage changes for performance.
+	Change sigaction calls to use __libc_sigaction.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_mctx.c:
+	Change to use allocated realtime signal instead of SIGUSR1.
+	Change sigaction calls to use __libc_sigaction.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_pqueue.c:
+	Fix ASSERTS_ON problem.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sched.c:
+	Deleted pth_allthread_mask() as it is no longer needed.
+	LDT usage changes for performance.
+	Change sigaction calls to use __libc_sigaction.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Export declaration of the __libc_sigaction so it is picked up
+	in the the generated header.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_util.c:
+	Change sigaction calls to use __libc_sigaction.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) sigrt.c:
+	Reserve the first 3 realtime signals for use by NGPT just as is
+	done by LinuxThreads.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) useldt.h:
+	Added new header to system.
+	LDT usage changes for performance.
+      [Bill Abt, <babt@us.ibm.com>]
+
+
+  Changes between 1.1.2 and 1.2.0
+
+   *) semaphore.h:
+   *) semaphore.c:
+   *) pthreadtypes.h:
+   *) pth.h.in:
+	Change definition of semaphore to maintain binary compatibility 
+	with LinuxThreads.
+      [Bill Abt, <babt@us.ibm.com>]
+  
+   *) pth.h.in:
+   *) pthreadtypes.h:
+	Correct hiding problems for the pth_qlock_st definition.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) semaphore.h:
+	Remove all definition of _pthread_fastlock.  It should already be
+	defined via the pthreadtypes.h include.
+      [Bill Abt, <babt@us.ibm.com>]
+  
+   *) semaphore.c:
+	Define _pthread_fastlock to be a qlock if it is not already defined
+	and our qlock is defined.
+      [Bill Abt, <babt@us.ibm.com>]
+  
+   *) pthreadtypes.h:
+	Remove old definition of _pthread_fastlock and replace it with the NGPT
+	qlock structure.  
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_h.in:
+	Add #define _PTHREAD_QLOCK_DEFINED after definiton of pth_qlock_st structure.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) semaphore.h:
+   *) semaphore.c:
+	Change definition of semaphore to contain rather than point to the
+	internal lock.
+      [Bill Abt, <babt@us.ibm.com>]
+  
+   *) pth_native.c:
+	Change pth_new_scheduler() diagnostic to prevent inadvertent and 
+	misleading messages.
+      [Bill Abt, <babt@us.ibm.com>]
+  
+   *) pthread.c:
+	Added Bound thread (setscope/getscope attribute) support.
+	check for (current->cleanups) to prevent seg fault in _pthread_cleanup_push_defer
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_event.c:
+	Added Bound thread (setscope/getscope attribute) support.
+	Remove the use the global WQ for MUTEX/COND events, use per-native
+	wait_queues instead. No need to set the MUTEX_WAITING anymore.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+	
+   *) pth_sync.c:
+	Lock the mutex once it comes back from scheduler, if needed.
+	Use the static event for PTH_EVENT_FUNC.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+	
+   *) pth_attr.c:
+   *) pth_lib.c:
+   *) pth.h.in:
+	Added Bound thread (setscope/getscope attribute) support.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Break from the signal loop, if sigpendcnt is satisfied.
+	Added Bound thread (setscope/getscope attribute) support.
+	Remove the use the global WQ for MUTEX/COND events, use per-native
+	wait_queues instead. No need to set the MUTEX_WAITING anymore.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	Calculate the global signal mask in the pth_sigmask().
+	No need to call pth_allthread_mask().	
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+	
+   *) semaphore.h:
+   *) semaphore.c:
+	Added implementation for the following semaphore related APIs:
+	    sem_destroy, sem_init, sem_getvalue, sem_post, sem_trywait, sem_wait
+      [Bill Abt, <babt@us.ibm.com>]
+
+      _    _ 
+     / |  / |
+     | |  | |
+     | |_ | |_
+  ___|_(_)|_(_)_________________________________________________________________
+
+  Changes between 1.1.1 and 1.1.2
+
+   *) pth_native.c:
+	Change value for NR_TKILL to conform to accepted patch.
+      [Bill Abt, <babt@us.ibm.com>, Paul Larson, plars@us.ibm.com>]
+
+   *) pthread.c:
+	Rewrote following routines for better binary compatibility with LinuxThreads:
+	    _pthread_cleanup_push(), _pthread_cleanup_push_defer(),
+	    _pthread_cleanup_pop(), _pthread_cleanup_pop_restore().
+	Added the following routines for api compatibility with LinuxThreads:
+	    __pthread_clock_gettime(), __pthread_close_settime().
+      [David Howell, <david.p.howell@intel.com>]
+
+   *) pth_cleanup.c:
+	Correct layout of pth_cleanup_st to achieve binary compatibility with
+	LinuxThreads.
+      [David Howell, <david.p.howell@intel.com>]
+
+   *) libpthread.Versions:
+	Override _pthread_cleanup_pop_restore and _pthread_cleanup_push_defer.
+      [David Howell, <david.p.howell@intel.com>]
+
+   *) pth_cancel.c:
+   *) pth_lib.c:
+   *) pthread.c:
+   *) pth.h.in:
+	pth_exit() - added wait_flag in argument, to wait for pthread_exit().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_event.c:
+	Added new argument (flag) for the PTH_EVENT_SIGS case.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c:
+	pth_fork() -
+	Moved the pth_get_native_descr() after the atfork.prepare execution,
+	because the prepare routine may change the current running native thread.
+
+	Initialize global locks for child process.
+	Added new routine, pth_fork_drop_threads() to remove threads from global queues.
+	There is no need to hold queue locks, because it's a new process. Also, added
+	pth_fork_tcb_free() to free thread resources. We can't call the thread specific
+	destructor at this point, so added pth_fork_key_destroydata() to free t->data_value.
+	The pth_fork_tcb_free() is simplified version of pth_tcb_free().
+	The pth_fork_drop_natives(), frees native threads resources as needed.
+	The pth_fork_init(), initializes the pth_native_list, allocates first native for
+	this process, creates a new scheduler and starts a watchdog thread, if needed.
+	
+	Finally, add the current thread to pth_NQ list and run this thread under newly
+	created scheduler.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	pth_sleep_time() and pth_sigwait_ev() - added new flag value in the pth_event().
+	pth_sleep_time() - issue tkill() if "sig" is non-zero.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	pth_kill() - allow any thread to exit the process (not just pth_main). If current
+		native thread is not the first native (primordial), wait to run under it.
+
+	pth_raise() - if target is current thread, yield to deliver a signal. Also, if
+		signal is SIGSTOP, bound to first native for proper delivery.
+
+	pth_exit_cb() - count only the pth_active_threads.
+
+	pth_exit() - for the last pthread_exit (for pth_main thread), wait until all threads
+		exit. Also, call the thread cleanup for the pth_main.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_mctx.c:
+	Rename the usr1_lock to pth_usr1_lock (just for consistency).
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	Added "sched_lock" (per-native lock) and "is_running" flag in the pth_descr_st.
+	The "sched_lock" is used to synchronize the exit and scheduler (to avoid seg faults).
+
+	pth_drop_natives() - set the is_running to false for the first native while holding
+		a native lock, so no new scheduler can be created. (see pth_new_scheduler)
+		For each cloned task, call pth_cleanup_native() while holding the sched_lock,
+		to ensure that the scheduler is not running while freeing its resources.
+
+	pth_cleanup_native() - for the first native, wait until all natives are gone.
+
+	pth_exit_scheduler() - exit the cloned task cleanly, if pth_new_scheduler() fails.
+
+	pth_new_scheduler() - 
+		lock the per-native lock (sched_lock) instead global scheduler lock.
+		Avoid any race condition with exit process. Free all resources and exit cleanly.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_p.h.in:
+   *) pth_sync.c:
+ 	Added new macro, pth_lock_init() to initialize the pth_qlock_t.	 
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_pqueue.c: 
+	use the pth_lock_init() and don't check for lock owner, if the fork_initialized 
+	is TRUE in the pth_pqueue_delmax().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	use the pth_lock_init() and remove the pth_scheduler_kill().
+	
+	pth_scheduler() - For the signal delivery, if the signal is part of sigactionmask,
+		call tkill() to send signal to current thread (i.e. when sigaction() is
+		registred), else call kill() to send signal to process.
+		(IMPORTANT NOTE: according to Posix, "pthread_kill() only causes the signal 
+		to be handled in the context of the given thread; the signal action 
+		(termination or stopping) affects the process as a whole.")
+
+		The pth_scheduler() is now always run with the per-native "sched_lock". 
+		This lock is released when it is switched to run actual thread and when
+		it's sleeping in select().
+
+	pth_sched_eventmanager() - If the event type is PTH_EVENT_SIGS and a signal is 
+		pending on thread-specific "sigpending" mask, handle it differently for the
+		sigwait() and sleep(). (i.e. sleep() can't be interrupted by blocked signal)
+
+		Fix the pth_join race condition for 2 simultanous join.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_syscall.c: 
+	Added a wrapper for _exit().
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c: 
+	pth_tcb_free() - added a check, do not allow to unmap the stack for current 
+	running thread.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) test_pthread.c:
+	added _exit(0) (commented!) in the child() to test the process exit behavior.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) test_pthread_segv.c:
+	added pthread_kill() (commented!) to send a signal to a thread.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) libpthread.Versions:
+   *) pth_syscall.c:
+   *) pth_fork.c:
+   *) pth_lib.c:
+	Back out fork() and _exit() changes.
+      [Bill Abt, <babt@us.ibm.com>]
+   
+   *) ngpt.spec:
+	Removed dependency on kernel revision.  Not everyone installs
+	the rpm version of the kernel.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) libpthread.Versions:
+   *) pth_syscall.c:
+	Added wrapper to override _exit() behavior.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_fork.c:
+	Correct declaration of new pth_fork_init() function.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Correct behavior for fork() system call emulation.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Correct behavior for fork() system call emulation.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) Makefile.in:
+   *) test_cleanup.c:
+   *) test_str01.c:
+   *) test_str02.c:
+   *) test_str03.c:
+	Remove dos formatting characters.
+      [Arkadi E. Shishlov, <arkadi@it.lv>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_attr.c:
+   *) pth_cancel.c:
+   *) pth_cancel.c:
+   *) pth_data.c:
+   *) pth_event.c:
+   *) pth_ext.c:
+   *) pth_fork.c:
+   *) pth_msg.c:
+   *) pth_native.c:
+   *) pth_ring.c:
+	Remove setting of errno.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_errno.c:
+	Remove return_errno_noerr macro and replace it with return_error() macro.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	Remove use of errno_shield around free of buffers.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+   *) pth_sync:
+	Remove use of errno_shield in most instances.
+	Remove setting of errno.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_mctx.c:
+	Add lock release on error.
+	Remove setting of errno.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c:
+	Added use of errno_shield around mmap operations.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Remove setting of errno.
+	Change pthread functions to return error number rather than a pre-set errno.
+	Correct problem with once_control being set during init and not reset properly.
+	Add push and pop to pthread_once() routine.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) sysconf.c:
+	Added 1 to return value of POSIX_TTY_NAME_MAX to accomodate NULL terminator.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) test_str02.c:
+	Added feedback to '-l' option to print out every 1000 threads.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	Call to pth_event(PTH_EVENT_FUNC, ...) doesn't pass the required number of
+	parameters.
+      [Bill Abt, <babt@us.ibm.com>, Ethan Solomita, <ethan@cs.columbia.edu>]
+
+   *) pth_sched.c:
+	Handle cond_timewait events in the scheduler event manager.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) aclocal.m4:
+	Change the order of configure's parameter evaluation.
+      [Yusuf Goolamabbas, <yusufg@outblaze.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_native.c:
+	Fix PowerPC support.
+      [Bill Abt, <babt@us.ibm.com>, Anton Blanchard, <anton@samba.org>]
+	
+	Added descriptor based errno value.
+	Fixed k_gettid() not to use errno. (x86 only)
+	Fixed gettid() not use errno.
+      [Bill Abt, <babt@us.ibm.com>, Arend-jan Wytzes, <aj@godfather.wise-guys.nl>]
+
+	Use scheduler lock when creating new native threads.
+	Added time delay to avoid race condition between close and read of the sigpipe.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Fixed __errno_location() to retrieve the errno from the native descriptor
+	if available.
+      [Arend-jan Wytzes, <aj@godfather.wise-guys.nl>, Bill Abt, <babt@us.ibm.com>]
+
+	Corrected cancellation problems.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c:
+	Reduce potential calls to gettid() in the pth_tcb_free() function.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Added new scheduler lock for use when a new native is created.
+	Reorganize the pth_scheduler_drop() function to be more efficient.
+	Fix handling of event flags so timers are not lost but only do so if
+	a timer is present.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Fix the kill/restart process in pth_kill.
+	Correct problem in pth_get_native_descr() that could allow a null descr
+	to be returned.
+	Have pth_exit_cb() use only the running threads as criteria for return value.
+	Modify pth_exit() to correct problem with hangs at program end.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c:
+	Add the new sigactionmask member for tracking the action mask for each
+	thread separately.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Update the new sigactionmask member of the tcb when sigaction() is called
+	prior to invoking the glibc version.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Maintain properly the new sigactionmask member of the tcb.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	pth_sleep() should consider all the catchable signals NOT the unblocked signals
+	so that should an async signal be sent during a sleep it is processed properly.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	Fix the usage of the "is_used" flag in the native descriptor.  Since prior to
+	this fix, we were setting "is_used" during allocation it was possible for the
+	descriptor to be interrogated while still forming resulting in both tid and pid
+	discrepancies.  Now the "is_used" flag is only in the new clone after the proper
+	values have been filled in in the descriptor.
+	Isolated pth_clone_flags to single constant value.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Fix thread count handling to take advantage of new all threads list.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Initialize the "is_used" flag in the first native descriptor when the first
+	scheduler is started.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Fix thread count handling to take advantage of new all threads list.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_lib.c:
+	Fix thread count handling to take advantage of new all threads list.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_data.c:
+	pth_get_current() was be called multiple times needlessly.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_cancel.c:
+	Put back the thread exists check in the pth_cancel() routine.  This can
+	be done now because pth_thread_exists() is now reliable.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_tcb.c:
+   *) pth.h.in:
+   *) pth_p.h.in:
+	Added support for keeping a separate, complete list of all active threads
+	in the system along with a count.
+      [Saurabh Desai, <sdesai@us.ibm.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sched.c:
+	In pth_sched_eventmanager(), a scheduled timer event can get lost when
+	an other event happened before the timer elapses. This fix accounts for
+	this and ensures that the timer event is reset and not lost.
+      [Arend-jan Wytzes, <aj@godfather.wise-guys.nl>, Bill Abt, <babt@us.ibm.com>]
+
+   *) ngpt.spec:
+	Removed dependency on RH specific kernel-headers package.
+      [Timothy Reaves, <treaves@silverfields.com>]
+
+   *) pth_debug.c:
+	Move write in pth_debug() to proper place.
+      [Arend-jan Wytzes, <aj@godfather.wise-guys.nl>, Bill Abt, <babt@us.ibm.com>]
+
+
+  Changes between 1.1.0 and 1.1.1
+
+   *) pth_event.c:
+	Fix overshadow of tid introduced by the locking code path
+	reduction in the previous fix.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) README:
+   *) RELEASE:
+   *) pth_vers.c:
+   *) ChangeLog:
+	Update for version change and the latest CVS updates.
+      [Bill Abt, <babt@us.ibm.com>]
+	
+   *) pth_event.c:
+	Optimize and reduce the locking code path in pth_event() which
+	was identified via gprof as a "hot" spot.
+      [David Howell, <david.p.howell@intel.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sched.c:
+	More fixes for cancellation handling within the eventmanger.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+      
+   *) pth_sync.c:
+	Abort if the scheduler has locked the mutex.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+      
+   *) pth_sched.c:
+	Add global wait queue for threads waiting on mutexes.
+	Add count of mutex waiters to the overall wait queue count.
+	Remove locks from WQ.
+	Set the native current just before switching context to the
+	userlevel thread becoming current.
+	Make the scheduler the current immediately after return from
+	the context switch.
+	Handle the mutex wait queue when event checking.
+	Populate the mutex wait queue as needed.
+	Correct next timer event handling.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+      
+   *) pth_mctx.c:
+	Pass descr to pth_mctx_set_bootstrap() for performance improvements.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+      
+   *) pth_lib.c:
+	Account for descriptor change during cleanup.
+	Remove locks from pth_get_native_descr().
+	Check the wait queue when determining ESRCH failure during
+	a check for thread existence in pth_thread_exists().
+	Improved descriptor handling in pth_join().
+	Handle PTH_STATE_MUTEX_WAITING.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+      
+   *) pth_event.c:
+	Account for PTH_STATE_MUTEX_WAITING if a mutex versus PTH_STATE_WAITNG for
+	everything else in a wait state.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+      
+   *) pth_cancel.c:
+	Handle PTH_STATE_MUTEX_WAITING.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+      
+   *) pth.h.in:
+	Added PTH_STATE_MUTEX_WAITING.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+      
+   *) pthread.h.in:
+	Fix binary definitions of some constants to be compatible with LinuxThreads.
+      [Bill Abt, <babt@us.ibm.com>, David Howell, <david.p.howell@init.com>]
+
+   *) test_str03.c:
+	Expand max threads to 50000 due to increased NGPT capacity.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Strong alias for vfork and __vfork.
+      [David Howell, <david.p.howell@intel.com>, Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_high.c:
+	Correct sleep behavior to conform to POSIX.
+      [David Howell, <david.p.howell@intel.com>]
+
+   *) pth_sync.c:
+	Remove the yield under all circumstances from pth_mutex_release.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sched.c:
+	Set the current thread to the scheduler right after return
+	from the context switch.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	Moved unmap of native stack after tkill of native thread.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Don't disable the watchdog when active threads goes to 1.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+   
+   *) pth_lib.c:
+	Added number of natives to criteria for ESRCH failure.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Added lock to protect global atfork resource.
+	More changes to shorten code path for socketcalls.
+      [David Howell, <david.p.howell@intel.com>]
+
+   *) pth_debug.c:
+	Put write back that deleted inadvertently.
+      [David Howell, <david.p.howell@intel.com>]
+
+   *) pthread.c:
+	Added __raise as wrappered routine.
+	Versioned raise to GLIBC 2.0.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Added strong alias for nanosleep.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) test_cleanup.c:
+	Source for newly added test case.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+   *) configure.in:
+	Added new test case, test_cleanup
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) aclocal.m4:
+	Added ASSERTS_ON to debug options.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) libpthread.versions:
+	Expose _pthread_cleanup_push/pop.
+      [David Howell, <david.p.howell@intel.com>]
+
+   *) pth_p.h.in:
+	Added ASSERTS_ON definition so that asserts are no longer
+	executed in a "performance" build.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sync.c:
+	Removed all debug statements from module to prevent recursive
+	calling of mutex code.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	Added pth_yield() to pthread_setcancelstate() and pthread_testcancel()
+	to account for the removed pth_yield() in the pth_cancelpoint() routine.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_p.h.in:
+   *) pth_high.c:
+	Corrected problem in "verbose" mode when getting the name of the
+	current thread.  In early stages of execution, there is no thread, 
+	therefore no thread name!!!
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_high.c:
+	Fixes to correct problems with FDMODE and socket io.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+      
+   *) pth_lib.c:
+	Changed pth_get_native_descr() to check for watchdog descr when searching.
+	Reduced number of calls to pth_get_current() in pth_spawn_trampoline.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Move cleanup of main thread to earlier spot to correct timing problem.
+	Retrieve descriptor once again prior to context switch in pth_exit.  It
+	may have changed.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	Made pth_watchdog_descr visible outside so that pth_get_native_descr()
+	can check it.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_cancel.c:
+   *) pth_event.c:
+   *) pth_lib.c:
+   *) pth_sync.c:
+   *) pthread.c:
+	Fix for cancellation problems.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.c:
+	Shorten code path for socketcalls.
+	Expose _pthread_cleanup_push/pop.
+      [David Howell, <david.p.howell@intel.com>]
+      
+   *) pth_syscall.c:
+	Shorten code path for IO calls.
+	Expand socketcall argument array to 6.  Fixes crash potential.
+      [David Howell, <david.p.howell@intel.com>]
+      
+
+      _    _ 
+     / |  / |
+     | |  | |
+     | |_ | |_
+  ___|_(_)|_(_)_________________________________________________________________
+
+  Changes between 1.0.3 and 1.1.0
+
+   *) INSTALL:
+        Remove enable kernel patch option, replace with kernel patch missing warning.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) Makefile.in:
+        Removed old pth test cases. These files are no longer supported.  
+	Removed libngpt* build.  Legacy from Pth.
+        GNU Pth Legacy support is no longer provided.
+	Added install-backup and uninstall-restore capabilities.
+        Added new files.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) acconfig.h:
+	Remove enable kernel patch option, replace with kernel patch missing warning.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) aclocal.m4:
+	Remove enable kernel patch option, replace with kernel patch missing warning.
+	Added additional link options to create a init and fini entry points.
+	Added link option that will give us map.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) config.param:
+	Remove enable kernel patch option.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) configure:
+   *) configure.in:
+	Add generational support for new headers.
+	Remove old kernel patch option. 
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) libpthread.Versions:    
+	Added new functions for better glibc integration and
+	LinuxThreads compatibility.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) local_lim.h.in:
+	New header to reflect NGPT limits which are higher than LinuxThreads.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ltmain.sh:
+	Added additional link options to create a init and fini entry points.
+	Added link option that will give us map.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) ngpt.spec:
+	Version change.
+	Additional header files.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) posix_opt.h.in:
+	New header to reflect NGPT POSIX enablement which are more than LinuxThreads.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth.h.in:
+	Added support for mutexattr structure and APIs.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_acdef.h.in:
+	Remove enable kernel patch option, replace with kernel patch missing warning.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_cancel.c:
+	Internal lock handling changes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Cancellation handling changes for POSIX compliance.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+    
+   *) pth_debug.c:
+	Internal lock handling changes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Enable debug output to a file.
+      [David Howell, <david.p.howell@intel.com>]
+
+   *) pth_fork.c:
+	Fork handling changes for POSIX compliance.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_high.c:
+	Internal lock handling changes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	POSIX changes.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+	Improved error handling.
+      [David Howell, <david.p.howell@intel.com>]
+
+   *) pth_lib.c:
+	Internal lock handling changes.
+	Removed implicit initialization.  Now handled by library entry point.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	POSIX changes for fork handling.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_mctx.c:
+	Internal lock handling changes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_native.c:
+	Internal lock handling changes.
+	Improved watchdog handling.
+	Improved cleanup handling (for fork).
+	PowerPC support.
+      [Bill Abt, <babt@us.ibm.com>, Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_p.h.in:
+	Internal lock handling changes.
+	Removed conditional for kernel patch.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_pqueue.c:
+	Internal lock handling changes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sched.c:
+	Internal lock handling changes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Fork handling changes for POSIX compliance.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	Internal lock handling changes.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Mutex handling changes for POSIX compliance.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_syscall.c:
+	Glibc/LinuxThreads compatibility: 
+	  Many more wrappers added.
+	  More strong_aliases.
+	Socketcall fixes.  SOCKOP condiitionally defined for Linux.
+      [Bill Abt, <babt@us.ibm.com>, David Howell, <david.p.howell@intel.com>]
+
+   *) pth_tcb.c:
+	libc_tsd support.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_vers.c:
+	Version change.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	Internal lock handling changes.
+	Implicit startup and shutdown removed.
+	Added new strong_aliases for startup and shutdown entry points.
+	Added flockfile/funlockfile/ftrylockfile support.
+	Mutex attribute support enhanced.
+      [Bill Abt, <babt@us.ibm.com>]
+
+	Mutex attribute support enhanced.
+	Mutex handling fixes for POSIX.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthread.h.in:
+	Added flockfile/funlockfile/ftrylockfile support.
+	Mutex attribute support enhanced.
+      [Bill Abt, <babt@us.ibm.com>]
+    
+	Mutex attribute support enhanced.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pthreadtypes.h:
+	Mutex attribute support enhanced.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) semaphore.c:
+   *) semaphore.h:
+	Initial semaphore support.  INCOMPLETE.
+      [Bill Abt, <babt@us.ibm.com>]
+    
+   *) sigrt.c:
+	Initial realtime signal support.
+      [Bill Abt, <babt@us.ibm.com>, David Howell, <david.p.howell@intel.com>]
+
+   *) sysconf.c:
+	Sysconf support.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) getlogin.c:
+	Getlogin and getlogin_r support.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) test_pthread.c:
+	General cleanup.
+	Added testing of getlogin.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) test_str01.c:
+   *) test_str02.c:
+   *) test_str03.c:
+	Correct compiler warnings.
+      [Paul Larson, <plars@us.ibm.com>]
+
+     _   ___
+    / | / _ \
+    | || | | |
+    | || |_| |
+  __|_(_)___/_____________________________________________________________
+
+  Changes between 1.0.2 and 1.0.3
+
+   *) HISTORY:
+   *) MILESTONES:
+   *) README:
+   *) RELEASE:
+   *) THANKS:
+   *) TODO:
+   *) pth_vers.c:
+	    Update per release info.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.c:
+	    Added new functions required by for POSIX.
+	    Added new strong aliases and versioned symbols for increased 
+	    binary compatibility with LinuxThreads
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pthread.h.in:
+   *) pthreadtypes.h:
+   *) sigthread.h
+	    Added new functions required by for POSIX.
+	    Changed location of certain declarations to be as defined
+	    by POSIX.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_sync.c:
+	    Corrected problems with locks that caused a deadlock.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_syscall.c:
+	    Function name changes for increased binary compatibility with LinuxThreads
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_sched.c:
+	    Corrected problems with periodic hangs at thread exit time.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_pqueue.c:
+	    Moved assert to proper place.  Can't lock what doesn't exist ;-)
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_p.h.in:
+	    Accomodate changed location of certain declarations for POSIX
+	    compliance.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_native.c:
+	    hange definition of default syscall numbers for gettid, tkill.
+	    Added definition of CLONE_SIGPEND for use in future releases.
+      [Bill Abt, <babt@us.ibm.com>]
+
+   *) pth_lib.c:
+	    Accomodate thread exit time fixes.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth_debug:
+	    Dump entries on all WAIT QUEUES for ALL native threads.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) pth.h.in:
+	    Accomodate thread exit time fixes.
+      [Saurabh Desai, <sdesai@us.ibm.com>]
+
+   *) ngpt.spec:
+	    Changed dependency and pre-reqs.  Binary RPMs now require 
+	    kernel 2.4.9 or higher.
+	    Fixed some errors uncovered by rpmlint.
+      [Bill Abt, <babt@us.ibm.com>]
+
+  Changes between 1.0.1 and 1.0.2
+
+   *) Makefile.in:
+   *) ngpt.spec:
+	    Fixed install to properly install pthread library into /lib.
+      [Bill Abt]
+
+   *) config.param:
+	    Added gprof option.
+	    Added --enable-optimize to install option.
+      [Bill Abt]
+
+   *) README:
+   *) pth_vers.c:
+	    Update of Version.
+      [Bill Abt]
+
+   *) TODO:
+	    Update of priorities
+      [Bill Abt]
+
+   *) pth_cancel.c:
+   *) pth_lib.c:
+   *) pth_native.c:
+   *) pth_pqueue.c:
+   *) pth_sched.c:
+   *) pth_sync.c:
+	    Changes to accomodate multiple wait queues.
+      [Bill Abt, Saurabh Desai]
+
+   *) pth_lib.c:
+   *) pth_native.c:
+	    Changes to allow use of library when kernel patch is not applied.
+      [Bill Abt]
+
+   *) pth_native.c:
+	    Added watchdog thread.
+	    Added pth_try_lock().
+      [Bill Abt]
+      
+   *) pth_sched.c:
+   *) pth_sync.c:
+	    Some fixes for lock handling.
+      [Bill Abt, Saurabh Desai]
+      
+   *) pthread.c:
+   *) pthread.h.in:
+	    Changed pth_attr_setXXXX functions signatures to conform to POSIX.
+	    Made pthread_detach() a function rather than macro and added strong alias for it.
+      [Bill Abt]
+      
+   *) pthread.h.in:
+	    Set more flags to conform to POSIX.
+      [Bill Abt]
+      
+
+  Changes between 1.0.0 and 1.0.1
+
+   *) HACKING:
+	    Added libpthread.Versions link edit script for glibc compatibility.
+      [Bill Abt]
+
+   *) INSTALL:
+	    Update install instructions.
+	    Update defaults for configure.
+      [Bill Abt]
+      
+   *) Makefile.in:
+	    Added libpthread.Versions link edit script for glibc compatibility.
+	    Fix install problem for pth_p.h.
+      [Bill Abt]
+
+   *) MILESTONES:
+   *) README:
+   *) RELEASE:
+   *) TODO:
+   *) configure.in:
+   *) ngpt.spec:
+   *) pth_vers.c:
+	    Update for 1.0.1
+      [Bill Abt]
+
+   *) ltconfig:
+	    Added LDFLAGS as parameter to archive command so as to 
+	    accomodate the link edit version script.
+      [Bill Abt]
+
+   *) ltmain.sh:
+	    Check for the presence of the .Versions file and pass along to the
+	    linker if found.
+      [Bill Abt]
+
+   *) pth_lib.c:
+	    Start the watchdog thread if the we are running with more than
+	    1 native thread.
+      [Bill Abt]
+
+   *) pth_native.c:
+	    Added support for watchdog thread when in M:N mode.  This area
+	    still needs some more work.
+      [Bill Abt]
+
+   *) pth_p.h.in:
+	    glibc compatibility: Added macro to support creating versioned
+	    symbols as required by glibc.
+      [Bill Abt]
+
+   *) pth_sched.c:
+	    Added scheduler lock to correct load problems on SMP.
+	    Corrected load balancing by ensuring now value in the scheduler
+	    is set properly.  
+      [Arun Sharma, Bill Abt]
+
+   *) pth_syscall.c:
+	    glibc compatibility: Added more ghosted glibc functions that are
+	    expected by glibc to be ghosted.
+      [Bill Abt]
+
+   *) pthread.c:
+	    glibc compatibility: Changed some entry point name and added use
+	    of versioned symbols for some functions.  Added additional strong
+	    aliases for new ghosted functions.
+      [Bill Abt]
+
+   *) pthread.h.in:
+	    glibc compatibility: Changed some external values to match those in
+	    use by LinuxThreads to improve binary compatibility.
+      [Bill Abt]
+
+   *) test_pthread.c:
+   *) test_pthread_segv.c:
+   *) test_std.c:
+	    Removed use of gettid() function in test programs.
+      [Bill Abt]
+
+  Changes between 0.9.6 and 1.0.0
+
+   *) General:
+	    Change the way pth_native_list is addressed.
+	    Added additional debug statements.
+      [Bill Abt]
+
+   *) pth_p.h.in:
+	    Added new qlocks to the mutex and cond structures.
+	    Added include of sys/mman.h for mmap/munmap.
+      [Bill Abt]
+
+   *) pth_attr.c:
+   *) pth_clean.c:
+   *) pth_data.c:
+   *) pth_event.c:
+   *) pth_ext.c:
+   *) pth_high.c:
+   *) pth_msg.c:
+	    Changed from using malloc/free to pth_malloc/pth_free.
+      [Bill Abt]
+
+   *) pth_data.c:
+	    Added new lock for debug operations.
+      [Bill Abt]
+
+   *) pth.h.in:
+	    Fix description of qlock.
+      [Bill Abt]
+
+   *) INSTALL:
+	    Update quick install directions.
+      [Bill Abt]
+
+   *) pth_lib.c:
+	    Added pth_malloc using mmap().
+	    Added pth_free using munmap().
+	    Added code to initialize native descriptor list.
+	    Fixed alogorithm for counting running threads to include threads
+	    running on other native threads.
+	    Removed the restriction that new native threads can only be
+	    created on the first native thread.
+	    Fixed pth_getcontext() to accomodate other context switching
+	    methods.
+	    Moved most of the work of pth_thread_cleanup to pth_tcb_free() to
+	    fix chicken and egg problem on SMP ;-)
+	    Added soft wrapper for exit().
+      [Bill Abt]
+
+   *) pth_mctx.c:
+	    Changed from using malloc/free to pth_malloc/pth_free.
+	    Added new lock for SIGUSR1 operations.
+      [Bill Abt]
+
+   *) pth_pqueue.c:
+	    Moved definition of qlock to pth_p.h.in as usage has expanded.
+      [Bill Abt]
+
+   *) pth_sync.c:
+	    Added new locks to mutex and conditions and code to acquire and
+	    release them as appropriate.
+      [Bill Abt]
+
+   *) pth_syscall.c:
+	    Added hard wrapper for syscall exit().
+      [Bill Abt]
+
+   *) pth_tcb.c:
+	    Changed from using malloc/free to pth_malloc/pth_free.
+	    Added thread lock.
+	    Added code to remove pending timers from other native
+	    threads that are waiting upon a newly expired thread.
+	    Added code to destroy key data during the free of a thread.
+      [Bill Abt]
+
+   *) pth_native.c:
+	    Changed from using malloc/free to mmap/munmap.
+	    Added is_used, nexttimer_thread and stack_top members.
+	    Changed the way pth_native_list is addressed.
+	    Fixed parameter for clone() to use stack_top rather than bottom.
+      [Bill Abt]
+
+   *) pth_native.c:
+	    Change the order in which native threads are cleaned up.
+      [Saurabh Desai]
+
+   *) pth_sched.c:
+	    Changed from using malloc/free to mmap/munmap.
+	    Made pth_native_list static.
+	    Changed the way pth_native_list is addressed.
+	    More debug info is outputted.
+	    Moved nexttimer_thread to be native specific so cleanup can
+	    be handled properly.
+      [Bill Abt]
+
+   *) pth_sched.c:
+	    Made sure nexttimer_ev are only handled once.
+      [Saurabh Desai]
+
+   *) pth_sched.c:
+	    Added code to ensure that other native threads who are waiting
+	    in the scheduler are awakened when the load dictates.
+      [Dave McCracken]
+
+   *) pthread.c:
+	    Added pthread_initialize() so glibc can call it during initialization.
+	    Added a lock for use during initialization.
+	    Added an array of static mutexes for used during initialization.
+	    Changed mutex ops to work w/o memory allocation (at least for a
+	    little while) during initialization.
+	    Changed from using malloc/free to pth_malloc/pth_free.
+      [Bill Abt]
+
+
+      ___   ___
+     / _ \ / _ \
+    | | | | (_) |
+    | |_| |\__, |
+  ___\___(_) /_/__________________________________________________________
+
+  Changes between 0.9.5 and 0.9.6
+
+   *) In test cases, general code cleanup.
+      Remove restart, no longer valid to shutdown and restart.
+      Fix compiler warning in test cases.
+      [Bill Abt, Saurabh Desai]
+
+   *) pthread.c:  
+	    Added new mlock to allow for early mutex usage by threadsafe
+	    glibc malloc.
+	    Added strong aliases for pthread_mutex_xxxx routines so that glibc
+	    can detect and use the threadsafe versions of library functions.
+      [Bill Abt]
+
+   *) pth_sync:   
+	    Added additional debug statements.
+      [Bill Abt]
+
+   *) pth_pqueue.c:	
+	    Changed definition of a lock to track owner and to allow nested lock
+	    operations.
+      [Bill Abt]
+
+   *) pthread.c:  
+	    Added pth_lock_all() and pth_release_all() macros for locking all the
+	    queues in a single operation.
+	    Added defintion of strong_alias macro to allow strong aliasing of
+	    certain pthread_xxxx functions to allow glibc to detect and therefore
+	    use threadsafe versions of functions.
+      [Bill Abt]
+
+   *) pth_native.c:
+	    Added use of new tkill() function instead of stock kill().
+	    Changed the way pth_alloc_native works so that slot is no longer
+	    needed to be passed as a parameter.
+	    Cleanup error checking in general and the actual native cleanup
+	    methods.
+	    Pass the actual native descriptor to clone (and subsequently to the
+	    pth_new_scheduler()) instead of slot.
+	    Added locks when modifying the contents of the native descriptor.
+	    Made gettid(), tkill() and pth_testandset() inline functions.
+	    Improved pth_XXXXXX_lock functions to allow owner tracking
+	    and nested locking by the owner.
+	    Removed unused function, pth_compare_and_swap.
+      [Bill Abt]
+
+   *) pth_mctx.c: 
+	    Changed to use tkill() instead of kill() when signalling.
+      [Bill Abt]
+
+   *) pth_cancel.c:
+	    Added new locks around access to various queues.
+      [Bill Abt]
+
+   *) pth_data.c: 
+	    Added locks to protect multiple access to key data.
+      [Bill Abt]
+
+   *) pth_event.c:
+	    Added locks to protect multiple access to key data.
+      [Bill Abt
+
+   *) pth_high:   
+	    Changed pth_sigmask to always set remembered signal mask.
+	    Changed pth_sigmask to calculate new signal mask whenever the
+	    mask is changed.
+	    Changed pth_sigmask and pth_sigwait_ev to wake up the first native
+	    thread whenever a change is made or pth_wait is about to be called.
+      [Saurabh Desai]
+
+   *) pth_lib.c:  
+	    Added locks to protect multiple access to queue data.
+	    Added new flags to indicate initialization and shutdown in progress
+	    and code to set/unset appropriately.
+	    Deferred the determination of library maximums until after the scheduler
+	    has been initialized
+	    In pth_kill() and pth_exit(), bind the user thread to the first native
+	    and wake up the first native so the operation completes on the
+	    first native thread.
+      [Bill Abt, Saurabh Desai]
+
+   *) pth_sched.c:
+	    Added various locks to prevent multiple access to data.
+      [Bill Abt, Saurabh Desai]
+
+   *) pth_sched.c:
+	    Added pth_allthread_mask() function used to re-calculate the signal
+	    mask when it is changed.
+	    Changed from using kill() to send a signal to using tkill().
+      [Saurabh Desai]
+
+   *) pth_sched.c:
+	    Remove unused arrays.
+	    Added static definition of first native descriptor so that malloc need
+	    not be called prior to library initialization.
+	    Added code to use static definition of first native descriptor.
+	    In pth_scheduler(), if there are no items ready to run, go to the
+	    event manager and wait.
+	    Added additional debug statements.
+      [Bill Abt]
+
+  Changes between 0.9.4 and 0.9.5
+
+   *) Added new headers, bits/sigthread.h and bits/pthreadtypes.h
+      [Bill Abt]
+
+   *) Added new test cases for pthreads: test_pthread_sig, test_pthread_segv, 
+      test_pthread_cancel.
+      [Saurabh Desai, Bill Abt]
+
+   *) .aliases - Changed bt macro to do a make & make test so that a build will not
+      continue if errors are encountered.
+      [Bill Abt]
+
+   *) pth_cancel.c - Changed pth_cancel_state() so that if the current cancel state is
+      PTH_CANCEL_ASYNCHRONOUS, a yield will done to allow the
+      scheduler a chance to run.  This corrects a problem found when
+      using the pthread cancellation API.
+      [Bill Abt, Saurabh Desai]
+      
+   *) pth_cancel.c = Changed pth_cancel_point(), called by pthread_testcancel(), to
+      yield to the scheduler if the current thread is not in a cancel state
+      and a cancel request is not pending.  This corrects a problem
+      found when testing the pthread cancellation API on a UP machine.
+      [Bill Abt, Saurabh Desai]
+
+   *) pth_native.c - In pth_new_native(), corrected a problem whereby the slot number
+      being passed via clone() to the new scheduler was passed as a
+      stack based variable.  This variable is now allocated from the heap.
+      [Arun Sharma, <arun@sharmas.dhs.org>]
+
+   *) pth_native.c - In pth_new_native(), corrected a problem whereby the number of
+      native threads was not decremented in the event of a failure to
+      allocate or clone.
+      [Saurabh Desai, Bill Abt]
+
+   *) pth_native.c - Added support for IA64.
+      [Nick Pollitt]
+ 
+  Changes between 0.9.3 and 0.9.4
+ 
+   *) Corrected problems with signal handling.  The signal mask was not being
+      inherited properly from thread to thread.  This cause pthread_sigmask to
+      fail in some instances.
+      [Bill Abt, Saurabh Desai]
+  
+   *) Removed the change to the clone() parameters in pth_native.c  The peer
+      relationship between threads is now established in the kernel patch.
+      [Bill Abt]
+
+  Changes between 0.9.2 and 0.9.3
+
+   *) Changed clone parameters in pth_native.c to include the undocumented
+      CLONE_PARENT.  This will establish a true peer relationship among threads
+      in a process.
+      [Saurabh Desai, Bill Abt]
+
+  Changes between 0.9.1 and 0.9.2
+
+   *) Added support for S/390 to pth_native.c
+	(Thanks to Neale Ferguson of Software AG for his contribution.)
+      [Neale Ferguson]
+   *) Added kernel patch for 2.4.0 to complete implementation of the
+      CLONE_THREAD functionality of the clone() api that was introduced
+      in the 2.4 Linux kernel.
+      [Bill Abt, Saurabh Desai]
+   *) Added new build option to configure (--enable-kernel-patch) that will
+      the user build and use NGPT with the accompanying kernel patch or continue
+      to run with an unpatched kernel.  Enabling this feature without first
+      applying the patch is NOT RECOMMENDED and will result in an internal
+      library crash.
+   *) Changed pth_new_native() so that the CLONE_THREAD flag is passed.
+   *) Changed from the use of getpid() to get the process id to gettid(), a
+      new system called added by the patch, that returns the native thread id.
+   *) Improved the pth_bindtonative function in pth_lib.c
+   *) Improved the alogrithm where new native threads are launched to better
+      utilize system resources.
+      [Bill Abt]
+   
+  Changes between 0.9.0 and 0.9.1
+
+   *) POSIX/Single UNIX Spec Required Changes:
+	    added pthread_attr_setguardsize, currently returns ENOSYS.
+	    added pthread_attr_getguardsize, currently returns ENOSYS.
+	    added pthread_setconcurrency, currently returns success.
+	    added pthread_getconcurrency, currently returns 0 or value set
+		with previous call to pthread_setcurrency.
+	    added # defines as required by the POSIX specification.
+   *) Removed ngpt headers and config from development spec in rpm spec
+      file.  These are for internal use only.
+   *) Added a .aliases file that can be sourced to make life easier when
+      working with the NGPT source.
+      [Bill Abt]
+
+  Changes between 0.0.0 and 0.9.0
+
+   *) Initial release
+      [Bill Abt]
+

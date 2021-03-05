@@ -1,0 +1,113 @@
+  NGPT - Next Generation POSIX Threading
+
+  HACKING
+  =======
+
+  HOW TO BE ALWAYS UP TO DATE
+  ---------------------------
+
+  [ TO BE DETERMINED ;-) ]
+
+  Read the comprehensive CVS user manual (included in the CVS
+  distrubtion as `doc/cvs.ps') for more details on how to work with CVS.
+
+  OVERVIEW OF THE SOURCE TREE
+  ---------------------------
+
+  Here is a brief overview of the source tree.
+
+  .aliases............... Useful aliases for working with NGPT
+  .gdbinit .............. GDB rc file for use with NGPT
+  .dmallocrc ............ Debug malloc rc file for use with NGPT
+
+  AUTHORS ............... List of major package authors
+  COPYING ............... Copying conditions (the LGPL)
+  ChangeLog ............. The detailed list of every source change
+  HACKING ............... This document
+  HISTORY ............... List of released NGPT versions
+  INSTALL ............... Installation Instructions
+  Makefile.in ........... Build procedure for a standard Make tool
+  NEWS .................. The list of major changes between version
+  RELEASE ............... The current release notes
+  README ................ The general package introduction text
+  SUPPORT ............... Hints for user support
+  TESTS ................. Results from tests with real-world applications
+  TODO .................. The laundry list of things still left to do
+  THANKS ................ List of credits to people
+  USERS ................. List of packages utilizing NGPT
+
+  acconfig.h ............ Autoconf header (the input for pth_acdef.h.in)
+  acheader.m4 ........... Autoconf macros for use with autoheader 
+  aclocal.m4 ............ Autoconf macros (for configure)
+  config.guess .......... Autoconf platform guessing tool (part I)
+  config.param .......... Autoconf command line parameter collections
+  config.sub ............ Autoconf platform guessing tool (part II)
+  configure ............. Autoconf script (pre-generated from configure.in)
+  configure.in .......... Autoconf script source
+
+  libpthread.Versions ... Link edit version script for glibc compatibility
+  ltconfig .............. Libtool configuration script
+  ltmain.sh ............. Libtool main template
+
+  ngpt-config.in ........ NGPT config script input
+  ngpt-config.pod ....... NGPT config script manual page source
+  ngpt.pod .............. NGPT manual page source
+  ngpt.spec ............. NGPT rpm specification
+
+  pth_acdef.h.in ........ Autoconf header with definitions (generated)
+  pth_acmac.h.in ........ Autoconf header with macros
+  pth.h.in .............. Public header file source
+  pth_p.h.in ............ Private header file source
+
+  pth_attr.c ............ NGPT module source: attribute objects
+  pth_cancel.c .......... NGPT module source: cancellation
+  pth_clean.c ........... NGPT module source: cleanup handler
+  pth_compat.c .......... NGPT module source: platform compatibility
+  pth_data.c ............ NGPT module source: thread local data
+  pth_debug.c ........... NGPT module source: debugging support
+  pth_errno.c ........... NGPT module source: errno handling
+  pth_event.c ........... NGPT module source: event objects
+  pth_ext.c ............. NGPT module source: extensional functionality
+  pth_fork.c ............ NGPT module source: fork support
+  pth_high.c ............ NGPT module source: high-level functions
+  pth_lib.c ............. NGPT module source: standard library functions
+  pth_mctx.c ............ NGPT module source: maschine context handling
+  pth_msg.c ............. NGPT module source: message ports
+  pth_native.c .......... NGPT module source: kernel threads
+  pth_pqueue.c .......... NGPT module source: priority queue data structure
+  pth_ring.c ............ NGPT module source: ring data structure
+  pth_sched.c ........... NGPT module source: scheduler
+  pth_string.c .......... NGPT module source: string functions
+  pth_sync.c ............ NGPT module source: synchronizations objects
+  pth_syscall.c ......... NGPT module source: hard system call support
+  pth_tcb.c ............. NGPT module source: thread control block
+  pth_time.c ............ NGPT module source: time handling
+  pth_util.c ............ NGPT module source: utility functions
+  pth_vers.c ............ NGPT module source: library version (generated)
+
+  pthread-config.in ..... Pthread API config script input
+  pthread-config.pod .... Pthread API config script manual page source
+  pthread.pod ........... Pthread API manual page source
+  pthread.c ............. Pthread API functions
+  pthread.h.in .......... Pthread API public header source
+
+  pthread.ps ............ Pthread API overview (from SMI)
+  rse-pmt.ps ............ Article `Portable Multithreading' for pth_mctx.c
+
+  shtool ................ Shtool script
+
+  striptease.mk ......... Makefile for stripped source tree
+  striptease.pl ......... Perl Script for stripping the source tree
+
+  test_common.c ......... Test common functions
+  test_common.h ......... Test common header
+  test_httpd.c .......... Test module: Faked HTTP Daemon
+  test_misc.c ........... Test module: Miscellaneous
+  test_mp.c ............. Test module: Message Ports
+  test_philo.c .......... Test module: Five Dining Philosophers
+  test_pthread.c ........ Test module: Pthread API
+  test_select.c ......... Test module: pth_select(3) handling
+  test_sfio.c ........... Test module: AT&T Sfio support
+  test_sig.c ............ Test module: Signal handling
+  test_std.c ............ Test module: Standard Test
+

@@ -1,0 +1,29 @@
+  NGPT - Next Generation POSIX Threading
+
+  THANKS
+  ======
+
+  Much credit has to be given to original creator of the GNU Pth.  Without 
+  his quality efforts, we would not have had the opportunity to create
+  this derivative package.
+
+    o  Ralf S. Engleschall	<rse@engleschall.com>
+
+  Credit has to be given to the following people who contributed ideas,
+  bugfixes, hints, gave platform feedback, etc. (in alphabetical order):
+
+    o  Nicholas Black		<dank@trellisinc.com>
+    o  Anton Blanchard		<anton@samba.org>
+    o  Evgenij Botov		<cloun81@mail.ru>
+    o  Mingming Cao		<mcao@us.ibm.com>
+    o  Neale Ferguson		<Neale.Ferguson@SoftwareAG-USA.com>
+    o  Yusuf Goolamabbas	<yusufg@outblaze.com>
+    o  Nick Pollitt		<npollitt@sgi.com>
+    o  Timothy Reaves		<treaves@silverfields.com>
+    o  Marijn Ros		<marijn@mad.scientist.com>
+    o  Arun Sharma		<arun@sharmas.dhs.org>
+    o  Ethan Solomita		<ethan@cs.columbia.edu>
+    o  Arend-Jan Wijtzes	<aj@godfather.wise-guys.nl>
+
+  ...and all other NGPT users who gave us feedback but we've forgot...
+

@@ -1,0 +1,391 @@
+##
+##  NGPT - Next Generation Threading
+##  Copyright (c) 2001 IBM Corporation <babt@us.ibm.com>
+##  Portions Copyright (c) 1999-2000 Ralf S. Engelschall <rse@engelschall.com>
+##
+##  This file is part of NGPT, a non-preemptive thread scheduling
+##  library which can be found at http://www.ibm.com/developer
+##
+##  This library is free software; you can redistribute it and/or
+##  modify it under the terms of the GNU Lesser General Public
+##  License as published by the Free Software Foundation; either
+##  version 2.1 of the License, or (at your option) any later version.
+##
+##  This library is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+##  Lesser General Public License for more details.
+##
+##  You should have received a copy of the GNU Lesser General Public
+##  License along with this library; if not, write to the Free Software
+##  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+##  USA.
+##
+##  Makefile.in: NGPT Makefile input
+##
+                             # ``UNIX -- where you can do anything
+                             #   in two keystrokes, or less...''
+@SET_MAKE@
+
+##
+##  ____ PATH DEFINITIONS ___________________________________________
+##
+
+VPATH       = @srcdir@
+srcdir      = @srcdir@
+top_srcdir  = @top_srcdir@
+
+S           = @srcdir_prefix@
+C           = ./
+
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = @bindir@
+libdir      = @libdir@
+includedir  = @includedir@
+mandir      = @mandir@
+datadir     = @datadir@
+
+##
+##  ____ TOOL DEFINITIONS ___________________________________________
+##
+
+SHELL       = /bin/sh
+CC          = @CC@
+CPPFLAGS    = @CPPFLAGS@ -I.. -I. -DTHREAD_DB
+CFLAGS      = @CFLAGS@ 
+LDFLAGS     = @LDFLAGS@
+LIBS        = @LIBS@
+SHTOOL      = ../shtool
+LIBTOOL     = ../$(C)libtool
+RM          = rm -f
+RMDIR       = rmdir
+TRUE        = true
+CAT         = cat
+CP          = cp
+SED         = sed
+ECHO        = echo
+GZIP        = gzip
+GTAR        = gtar
+TARDY       = tardy
+POD2MAN     = pod2man
+GDB         = gdb
+PERL        = perl
+LN	    = ln -f
+TOUCH	    = touch
+
+##
+##  ____ TARGET DEFINITIONS _________________________________________
+##
+
+BATCH            = @BATCH@
+PLATFORM         = @PLATFORM@
+PTH_MCTX_ID      = @PTH_MCTX_ID@
+PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
+
+TARGET_ALL  = @TARGET_ALL@ 
+TARGET_PREQ = ../pth_p.h
+TARGET_LIBS = @LIBTHREAD_DB_LA@
+TARGET_MANS = 
+TARGET_TEST = 
+
+#   object files for library generation
+#   (order is just aesthically important)
+LOBJS = td_init.lo td_log.lo td_symbol_list.lo td_ta_clear_event.lo \
+	td_ta_delete.lo td_ta_enable_stats.lo td_ta_event_addr.lo \
+	td_ta_event_getmsg.lo td_ta_get_nthreads.lo td_ta_get_ph.lo \
+	td_ta_get_stats.lo td_ta_lwp_info.lo td_ta_map_id2thr.lo \
+	td_ta_map_lwp2thr.lo \
+	td_ta_new.lo td_ta_reset_stats.lo td_ta_setconcurrency.lo \
+	td_ta_set_event.lo td_ta_thr_iter.lo td_ta_tsd_iter.lo \
+	td_thr_clear_event.lo td_thr_dbresume.lo td_thr_dbsuspend.lo \
+	td_thr_event_enable.lo td_thr_event_getmsg.lo td_thr_getfpregs.lo \
+	td_thr_getgregs.lo td_thr_get_info.lo td_thr_getxregs.lo \
+	td_thr_getxregsize.lo td_thr_set_event.lo td_thr_setfpregs.lo \
+	td_thr_setgregs.lo td_thr_setprio.lo td_thr_setsigpending.lo \
+	td_thr_setxregs.lo td_thr_sigsetmask.lo td_thr_tsd.lo \
+	td_utils.lo td_thr_validate.lo
+
+#   source files for header generation
+#   (order is important and has to follow dependencies in pth_p.h)
+HSRCS = 
+
+##
+##  ____ UTILITY DEFINITIONS _________________________________________
+##
+
+_VERSION_FILE = \
+	../pth_vers.c
+
+_VERSION = \
+	echo "updating package version"; \
+	$(SHTOOL) version -lc -n 'Next Generation POSIX Threading' -p pth_internal_ $$OPT $(_VERSION_FILE); \
+	V=`$(SHTOOL) version -lc -dlong $(_VERSION_FILE)`; \
+	$(SED) -e "s/Version .*(.*)/Version $$V/g" <README >README.n && mv README.n README; \
+	V=`$(SHTOOL) version -lc -dshort $(_VERSION_FILE)`; \
+	$(SED) -e "s/%define ver .*/%define ver $$V/g" <ngpt.spec >ngpt.spec.n && mv ngpt.spec.n ngpt.spec
+
+_TARBALL = \
+	$(SHTOOL) tarball -o $${NAME}.tar.gz -d $${NAME} -u gnu -g pth \
+	                  -e 'CVS,\.cvsignore,\.configure,\.\#.*,\.[ao]$$' -c 'gzip --best' .
+
+_MANPAGE = \
+	echo "Formatting $${BASENAME}.pod into $${BASENAME}.$${SEC} via $(POD2MAN)"; \
+	V1=`$(SHTOOL) version -lc -dshort $(_VERSION_FILE)`; \
+	V2=`$(SHTOOL) version -lc -dlong $(_VERSION_FILE)`; \
+	D=`$(SHTOOL) version -lc -dlong $(_VERSION_FILE) |\
+	   $(SED) -e 's;.*(;;' -e 's;).*;;'`; \
+	$(POD2MAN) --section=$${SEC} --center="$${ONELINE}" \
+	           --release="$$D" --date="$${NAME} $$V1" $(S)$${BASENAME}.pod |\
+	$(SED) -e "s;PTH_VERSION_STR;$$V2;" >$${BASENAME}.$${SEC}
+
+_DEBUG = \
+	core=""; \
+	if [ -f $$TEST.core ]; then \
+	    core="$$TEST.core"; \
+    elif [ -f core ]; then \
+		core="core"; \
+    fi; \
+	$(LIBTOOL) --mode=execute $(GDB) $$TEST $$core
+
+##
+##  ____ END USER TARGETS ____________________________________________
+##
+
+#   be aware of libtool when building the objects
+.SUFFIXES:
+.SUFFIXES: .c .o .lo
+.c.o:
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $<
+.c.lo:
+	$(LIBTOOL) --mode=compile --quiet $(CC) -c $(CPPFLAGS) $(CFLAGS) $<
+
+#   the default target
+all: all-normal
+all-normal: $(TARGET_ALL)
+	@touch .done-all
+	@$(MAKE) $(MFLAGS) what-next
+all-for-install: $(TARGET_ALL)
+	@touch .done-all
+
+#   build the static and possibly shared libraries
+libthread_db.la: $(LOBJS)
+	$(LIBTOOL) --mode=link --quiet $(CC) -o libthread_db.la \
+	$(LOBJS) -rpath $(libdir) -version-info `$(SHTOOL) version -lc -dlibtool $(_VERSION_FILE)`
+
+#   build the manual pages
+
+#   build test program
+
+#   RPM install the package
+
+#   install the package
+
+install: all-for-install
+	@$(MAKE) $(MFLAGS) install-dirs install-thread_db
+	@touch .done-install
+	@$(MAKE) $(MFLAGS) what-next
+install-dirs:
+	$(SHTOOL) mkdir -f -p -m 755 $(libdir)
+install-thread_db:
+	@umask 022; $(LIBTOOL) --mode=install \
+	$(SHTOOL) install -c libthread_db.la $(libdir)/libthread_db.la
+	(cd $(libdir) && ln -f -s libthread_db.so libthread_db.so.1)
+
+#   uninstall the package
+
+uninstall:
+	@$(MAKE) $(MFLAGS) uninstall-thread_db uninstall-dirs uninstall-restore
+	@touch .done-uninstall
+	@$(MAKE) $(MFLAGS) what-next
+uninstall-thread_db:
+	@$(LIBTOOL) --mode=uninstall $(RM) $(libdir)/libthread_db.la
+	$(RM) $(libdir)/libthread_db.so.1
+uninstall-dirs:
+
+uninstall-restore:
+	(cd $(libdir) && ln -f -s /lib/libthread_db.so.1 $(libdir)/libthread_db.so)	
+
+#   clean the source tree for re-building
+clean:
+	$(RM) $(TARGET_LIBS)
+	$(RM) core *.core *.bak *~ *.map cscope.out
+	$(RM) *.o *.lo
+	$(RM) .libs/*
+	-$(RMDIR) .libs >/dev/null 2>&1 || $(TRUE)
+	$(RM) .done-*
+
+#   clean the source tree for re-configuring and re-building
+distclean: clean
+	$(RM) Makefile
+
+#   clean the source tree by removing really all generate stuff
+realclean: distclean
+
+#   give hints what to do as the next step
+what-next:
+
+#   execute and debug one of the test programs
+
+#   GNU compat targets
+check: test
+installcheck:
+installdirs: install-dirs
+install-strip: install
+mostlyclean: clean
+maintainer-clean: realclean
+info:
+dvi:
+TAGS:
+
+##
+##  ____ DEVELOPER TARGETS ___________________________________________
+##  (THIS IS NOT INTENDED TO BE RUN BY END USERS)
+##
+
+#   fixup the permissions in the source tree
+fixperm:
+	@echo "Fixing permissions in source tree"
+	@$(SHTOOL) fixperm *
+
+#   debug the test programs
+
+#   roll the release or snapshot tarball
+
+#   make a striptease
+striptease:
+	@$(PERL) striptease.pl
+
+#   create dependencies
+depend:
+	$(CP) Makefile.in Makefile.in.bak \
+	&& $(SED) -ne '1,/^# DO NOT REMOVE/p' Makefile.in > Makefile.new \
+	&& $(CC) -MM $(CPPFLAGS) $(CFLAGS) *.c |\
+	   $(SED) -e 's/^\(td_.*\)\.o:/\1.lo:/' >> Makefile.new \
+	&& $(CP) Makefile.new Makefile.in \
+	&& $(RM) Makefile.new
+
+##
+##  ____ DEPENDENCY AREA ____________________________________________
+##  (AUTOMATICALLY UPDATED - DO NOT EDIT)
+##
+
+$(LOBJS): Makefile
+
+# DO NOT REMOVE
+td_init.lo: td_init.c thread_dbP.h proc_service.h thread_db.h ../pth_p.h \
+  ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h ../pth_acmac.h \
+  ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_log.lo: td_log.c thread_dbP.h proc_service.h thread_db.h ../pth_p.h \
+  ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h ../pth_acmac.h \
+  ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_symbol_list.lo: td_symbol_list.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_clear_event.lo: td_ta_clear_event.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_delete.lo: td_ta_delete.c thread_dbP.h proc_service.h thread_db.h \
+  ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_enable_stats.lo: td_ta_enable_stats.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_event_addr.lo: td_ta_event_addr.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_event_getmsg.lo: td_ta_event_getmsg.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_get_nthreads.lo: td_ta_get_nthreads.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_get_ph.lo: td_ta_get_ph.c thread_dbP.h proc_service.h thread_db.h \
+  ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_get_stats.lo: td_ta_get_stats.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_map_id2thr.lo: td_ta_map_id2thr.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_map_lwp2thr.lo: td_ta_map_lwp2thr.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_new.lo: td_ta_new.c thread_dbP.h proc_service.h thread_db.h \
+  ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_reset_stats.lo: td_ta_reset_stats.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_setconcurrency.lo: td_ta_setconcurrency.c thread_dbP.h \
+  proc_service.h thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h \
+  ../pth_acdef.h ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h \
+  ../td_manager.h
+td_ta_set_event.lo: td_ta_set_event.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_thr_iter.lo: td_ta_thr_iter.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_ta_tsd_iter.lo: td_ta_tsd_iter.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_clear_event.lo: td_thr_clear_event.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_dbresume.lo: td_thr_dbresume.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_dbsuspend.lo: td_thr_dbsuspend.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_event_enable.lo: td_thr_event_enable.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_event_getmsg.lo: td_thr_event_getmsg.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_getfpregs.lo: td_thr_getfpregs.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_getgregs.lo: td_thr_getgregs.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_get_info.lo: td_thr_get_info.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_getxregs.lo: td_thr_getxregs.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_getxregsize.lo: td_thr_getxregsize.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_set_event.lo: td_thr_set_event.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_setfpregs.lo: td_thr_setfpregs.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_setgregs.lo: td_thr_setgregs.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_setprio.lo: td_thr_setprio.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_setsigpending.lo: td_thr_setsigpending.c thread_dbP.h \
+  proc_service.h thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h \
+  ../pth_acdef.h ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h \
+  ../td_manager.h
+td_thr_setxregs.lo: td_thr_setxregs.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_sigsetmask.lo: td_thr_sigsetmask.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_tsd.lo: td_thr_tsd.c thread_dbP.h proc_service.h thread_db.h \
+  ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h
+td_thr_validate.lo: td_thr_validate.c thread_dbP.h proc_service.h \
+  thread_db.h ../pth_p.h ../futex.h ../pth_vers.c ../pth.h ../pth_acdef.h \
+  ../pth_acmac.h ../thread_db/thread_db.h ../useldt.h ../td_manager.h

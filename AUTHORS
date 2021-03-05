@@ -1,0 +1,49 @@
+  NGPT - Next Generation POSIX Threading
+
+  AUTHORS
+  =======
+
+  This is a list of authors who have written
+  or edited major parts of the GNU Pth sources.
+  (GNU Pth is the basis for NGPT)
+
+  o GNU Pth (as a whole):
+    Written by: Ralf S. Engelschall
+    Edited  by: Ralf S. Engelschall
+
+  This is a list of authors who have written
+  or edited major parts of the NGPT sources
+  or contributed in other ways to the project.
+
+  o NGPT (as a whole):
+    Written by: Bill Abt
+    Edited  by: Bill Abt
+    
+  o SMP Support
+    Written by: Bill Abt, Saurabh Desai
+    Edited by:  Bill Abt, Saurabh Desai
+
+  o S/390 Work
+    Written by: Neale Ferguson
+    Edited by:  Bill Abt
+
+  o IA64 Work
+    Written by: Nick Pollitt
+    Edited by:  Bill Abt
+
+  o PowerPC Work
+    Written by: Bill Abt
+    Edited by:  Bill Abt
+
+  o Kernel Patch
+    Written by: Dave McCracken, Bill Abt, Saurabh Desai
+    Edited by:  Dave McCracken
+
+  o System Test
+    Lead:	Paul Larson
+
+  o GDB Support
+    Written by: David Howell
+
+  o Memory Allocator:
+    Written by: Inaky Perez-Gonzalez

@@ -1,0 +1,10 @@
+NGPT - Next Generation POSIX Threading
+
+This introduces an M:N threading model to the Linux system.  This model will provide
+better performance for multi-threaded applications that utilize the POSIX pthreads
+library functionality.  This will be particularly true on SMP machines.
+
+The goal of this project is to make threading on Linux more robust, more POSIX compliant
+and more in line with the services provided by commerical Unix operating systems.
+
+
